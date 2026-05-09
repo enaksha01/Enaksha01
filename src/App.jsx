@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './App.css'; // Styling ke liye
+import './App.css';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Splash Screen Timer (Original 4.2 seconds)
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -14,39 +13,11 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Sections Components
-  const Home = () => (
-    <div className="content-section">
-      <h3>Portfolio</h3>
-      <div className="portfolio-grid">
-        <div className="portfolio-item">
-          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Duplex" />
-          <div className="portfolio-label">Duplex Home</div>
-        </div>
-        <div className="portfolio-item">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="3D" />
-          <div className="portfolio-label">3D Elevation</div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const Service = () => (
-    <div className="content-section">
-      <div className="service-card">
-        <i className="fa-solid fa-ruler-combined"></i>
-        <h3>2D Layout Plan</h3>
-      </div>
-      <div className="service-card">
-        <i className="fa-solid fa-cube"></i>
-        <h3>3D Elevation</h3>
-      </div>
-    </div>
-  );
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
     <div className="app-container">
-      {/* 1. ORIGINAL SPLASH SCREEN */}
+      {/* SPLASH SCREEN (As Original) */}
       {showSplash && (
         <div id="splash-screen">
           <div className="intro-container">
@@ -64,39 +35,56 @@ function App() {
 
       {!showSplash && (
         <>
-          {/* 2. ORIGINAL HEADER */}
+          {/* FIXED HEADER */}
           <header id="main-header">
             <div className="header-logo-text">
-              <span style={{ color: '#eb6923' }}>e</span>
-              <span style={{ color: '#5c5c5c' }}>-</span>
-              <span style={{ color: '#4b7dbd' }}>Naksha</span>
+              <span style={{ color: '#eb6923' }}>e</span><span style={{ color: '#5c5c5c' }}>-</span><span style={{ color: '#4b7dbd' }}>Naksha</span>
             </div>
-            <div onClick={() => setIsMenuOpen(true)} style={{ cursor: 'pointer' }}>
+            <div onClick={toggleMenu} style={{ cursor: 'pointer' }}>
               <i className="fa-solid fa-bars-staggered" style={{ fontSize: '1.6rem', color: '#5c5c5c' }}></i>
             </div>
           </header>
 
-          {/* SIDE MENU & OVERLAY */}
-          {isMenuOpen && <div className="menu-overlay active" onClick={() => setIsMenuOpen(false)}></div>}
+          {/* SIDE MENU */}
+          <div className={`menu-overlay ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu}></div>
           <div className={`side-menu ${isMenuOpen ? 'active' : ''}`}>
-            <div onClick={() => setIsMenuOpen(false)} style={{ textAlign: 'right', cursor: 'pointer' }}>
-              <i className="fa-solid fa-xmark fa-2xl"></i>
-            </div>
-            <ul className="side-menu-list">
-              <li onClick={() => { setActiveTab('home'); setIsMenuOpen(false); }}>Home</li>
-              <li onClick={() => { setActiveTab('service'); setIsMenuOpen(false); }}>Services</li>
+            <div onClick={toggleMenu} style={{ textAlign: 'right', cursor: 'pointer' }}><i className="fa-solid fa-xmark fa-2xl"></i></div>
+            <ul style={{ listStyle: 'none', marginTop: '30px', padding: 0 }}>
+              <li className="menu-li" onClick={() => { setActiveTab('home'); toggleMenu(); }}>Home</li>
+              <li className="menu-li" onClick={() => { setActiveTab('service'); toggleMenu(); }}>Services</li>
             </ul>
           </div>
 
-          {/* MAIN CONTENT AREA */}
-          <div className="main-content">
-            {activeTab === 'home' && <Home />}
-            {activeTab === 'service' && <Service />}
-            {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
-            {activeTab === 'profile' && <div className="content-section"><h2>Profile</h2><p>Login logic goes here.</p></div>}
-          </div>
+          {/* SCROLLABLE HERO SECTION (Middle Part) */}
+          <main className="main-content">
+            {activeTab === 'home' && (
+              <div id="home" className="content-section">
+                <h3>Portfolio</h3>
+                <div className="portfolio-grid">
+                  <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" /><div className="portfolio-label">Duplex Home</div></div>
+                  <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" /><div className="portfolio-label">3D Elevation</div></div>
+                </div>
+              </div>
+            )}
 
-          {/* 3. ORIGINAL BOTTOM NAV */}
+            {activeTab === 'service' && (
+              <div id="service" className="content-section">
+                <div className="service-card" onClick={() => alert('Opening 2D Form...')}>
+                  <i className="fa-solid fa-ruler-combined"></i>
+                  <h3>2D Layout Plan</h3>
+                </div>
+                <div className="service-card" onClick={() => alert('Opening 3D Form...')}>
+                  <i className="fa-solid fa-cube"></i>
+                  <h3>3D Elevation</h3>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
+            {activeTab === 'profile' && <div className="content-section"><h2>Profile</h2><p>Auth Logic Here.</p></div>}
+          </main>
+
+          {/* FIXED BOTTOM NAV (Original Stylish Look) */}
           <nav className="bottom-nav">
             <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
               <i className="fa-solid fa-house"></i><span>Home</span>
@@ -118,4 +106,4 @@ function App() {
 }
 
 export default App;
-                
+            
