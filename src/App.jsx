@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* SPLASH SCREEN (As Original) */}
+  {/* 1. ORIGINAL SPLASH SCREEN */}
       {showSplash && (
         <div id="splash-screen">
           <div className="intro-container">
@@ -35,6 +35,7 @@ function App() {
 
       {!showSplash && (
         <>
+
           {/* FIXED HEADER */}
           <header id="main-header">
             <div className="header-logo-text">
