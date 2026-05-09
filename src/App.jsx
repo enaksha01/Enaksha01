@@ -86,20 +86,31 @@ function App() {
           </main>
 
           {/* FIXED BOTTOM NAV (Original Stylish Look) */}
-          <nav className="bottom-nav">
-            <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
-              <i className="fa-solid fa-house"></i><span>Home</span>
-            </div>
-            <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}>
-              <i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span>
-            </div>
-            <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}>
-              <i className="fa-solid fa-cart-shopping"></i><span>Order</span>
-            </div>
-            <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
-              <i className="fa-solid fa-user"></i><span>Profile</span>
-            </div>
-          </nav>
+          {/* =========================================
+    NAVIGATION START
+    ========================================= */}
+<nav className="bottom-nav">
+  <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
+    <i className="fa-solid fa-house"></i>
+    <span>Home</span>
+  </div>
+  <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}>
+    <i className="fa-solid fa-screwdriver-wrench"></i>
+    <span>Service</span>
+  </div>
+  <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}>
+    <i className="fa-solid fa-cart-shopping"></i>
+    <span>Order</span>
+  </div>
+  <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
+    <i className="fa-solid fa-user"></i>
+    <span>Profile</span>
+  </div>
+</nav>
+{/* =========================================
+    NAVIGATION END
+    ========================================= */}
+
         </>
       )}
     </div>
