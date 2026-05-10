@@ -5,7 +5,8 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [formType, setFormType] = useState(null); // null, '2d', ya '3d'
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -67,20 +68,69 @@ function App() {
                 </div>
               </div>
             )}
-
+ {/* Service tab start*/}
             {activeTab === 'service' && (
-              <div id="service" className="content-section">
-                <div className="service-card" onClick={() => alert('Opening 2D Form...')}>
-                  <i className="fa-solid fa-ruler-combined"></i>
-                  <h3>2D Layout Plan</h3>
-                </div>
-                <div className="service-card" onClick={() => alert('Opening 3D Form...')}>
-                  <i className="fa-solid fa-cube"></i>
-                  <h3>3D Elevation</h3>
-                </div>
-              </div>
-            )}
+  <div className="content-section">
+    {!formType ? (
+      <>
+        <div className="service-card" onClick={() => setFormType('2d')}>
+          <i className="fa-solid fa-ruler-combined"></i>
+          <h3>2D Layout Plan</h3>
+        </div>
+        <div className="service-card" onClick={() => setFormType('3d')}>
+          <i className="fa-solid fa-cube"></i>
+          <h3>3D Elevation</h3>
+        </div>
+      </>
+    ) : (
+      <div className="form-container">
+        <button className="back-btn" onClick={() => setFormType(null)}>
+          <i className="fa-solid fa-arrow-left"></i> Back to Services
+        </button>
+        
+        <h2 className="form-title">
+          {formType === '2d' ? '2D Layout Requirements' : '3D Elevation Details'}
+        </h2>
 
+        <form onSubmit={(e) => { e.preventDefault(); alert("Proceeding to Payment..."); }}>
+          <div className="input-group">
+            <label>Plot Dimensions (Length x Width)</label>
+            <input type="text" className="form-input" placeholder="e.g. 20 x 50 ft" required />
+          </div>
+
+          <div className="input-group">
+            <label>Facing / Orientation</label>
+            <select className="form-input">
+              <option>East Facing</option>
+              <option>West Facing</option>
+              <option>North Facing</option>
+              <option>South Facing</option>
+            </select>
+          </div>
+
+          <div className="input-group">
+            <label>{formType === '2d' ? 'Number of Rooms' : 'Elevation Style'}</label>
+            <input type="text" className="form-input" placeholder={formType === '2d' ? "e.g. 2BHK / 3BHK" : "Modern / Classic / V-Ray Style"} required />
+          </div>
+
+          <div className="input-group">
+            <label>Floors</label>
+            <select className="form-input">
+              <option>Ground Floor Only</option>
+              <option>G + 1 Floor</option>
+              <option>G + 2 Floors</option>
+            </select>
+          </div>
+
+          <button type="submit" className="submit-btn">
+            CONFIRM & PAY NOW
+          </button>
+        </form>
+      </div>
+    )}
+  </div>
+)}
+            {/* Service tab end*/}
             {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
             {activeTab === 'profile' && <div className="content-section"><h2>Profile</h2><p>Auth Logic Here.</p></div>}
           </main>
