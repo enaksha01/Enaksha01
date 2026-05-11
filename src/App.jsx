@@ -1,13 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+/* =========================================
+   FIREBASE CONFIG START
+   ========================================= */
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 
-function App() {
+const firebaseConfig = {
+  apiKey: "AIzaSyARmOCO4APamzc8wuUlp5rEgPH8hZUMX6U",
+  authDomain: "enkasha-99c34.firebaseapp.com",
+  projectId: "enkasha-99c34",
+  storageBucket: "enkasha-99c34.firebasestorage.app",
+  messagingSenderId: "759836461630",
+  appId: "1:759836461630:web:30cc76c2c1075a3df99f6f"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+/* =========================================
+   FIREBASE CONFIG END
+   ========================================= */
+
+function App() { function App() {
+  // 1. Pehle States daalein (Agar pehle se nahi hain)
+  const [user, setUser] = React.useState(null);
+  const [formType, setFormType] = React.useState(null);
+  const [activeTab, setActiveTab] = React.useState('home');
+
+  // 2. Ab wo Auth Check wala function paste karein
+  /* =========================================
+     AUTH CHECK START
+     ========================================= */
+  const handleServiceClick = (type) => {
+    if (!user) {
+      setActiveTab('profile'); // Login nahi toh profile par bhej do
+    } else {
+      setFormType(type); // Login hai toh form kholo
+    }
+  };
+  /* =========================================
+     AUTH CHECK END
+     ========================================= */
+
+  // 3. Iske baad aapka baaki ka purana useEffect aur logic rahega
+
+  return (
+    // Aapka HTML/JSX code yahan se shuru hota hai...
+  );
+}
+                
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formType, setFormType] = useState(null); // null, '2d', ya '3d'
   
-  useEffect(() => {
+  useEffect(() => { 
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 4200);
