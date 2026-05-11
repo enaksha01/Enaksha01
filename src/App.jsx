@@ -153,23 +153,75 @@ function App() {
             )}
             {/* SERVICE SECTION END */}
 
-            {/* ORDER & PROFILE START */}
-            {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
-            {activeTab === 'profile' && (
-              <div className="content-section">
-                <h2>Profile</h2>
-                {user ? (
-                   <div className="profile-card">
-                     <p>Welcome, {user.email}</p>
-                     <button className="logout-btn" onClick={() => signOut(auth)}>LOGOUT</button>
-                   </div>
-                ) : (
-                   <p>Please Login to continue.</p> 
-                   /* Yahan aap apna login form paste kar sakte hain */
-                )}
-              </div>
-            )}
-            {/* ORDER & PROFILE END */}
+            {/* =========================================
+    ORDER & PROFILE START
+    ========================================= */}
+{activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
+
+{activeTab === 'profile' && (
+  <div className="content-section">
+    {!user ? (
+      <div className="auth-container">
+        <div className="auth-title">
+          <span style={{color:'#eb6923'}}>Login</span> Account
+        </div>
+        
+        {/* Login/Signup Tabs */}
+        <div className="auth-tabs">
+          <div className={`auth-tab ${authMode === 'login' ? 'active' : ''}`} onClick={() => setAuthMode('login')}>Login</div>
+          <div className={`auth-tab ${authMode === 'signup' ? 'active' : ''}`} onClick={() => setAuthMode('signup')}>Signup</div>
+        </div>
+
+        <form onSubmit={handleAuth}>
+          {authMode === 'signup' && (
+            <div className="input-group">
+              <input type="text" className="form-input" placeholder="Full Name" required />
+            </div>
+          )}
+          
+          <div className="input-group" style={{marginTop: '10px'}}>
+            <input 
+              type="email" 
+              className="form-input" 
+              placeholder="Email Address" 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <div className="input-group" style={{marginTop: '10px'}}>
+            <input 
+              type="password" 
+              className="form-input" 
+              placeholder="Password" 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <button type="submit" className="submit-btn" style={{marginTop: '20px'}}>
+            {authMode === 'login' ? 'LOGIN' : 'REGISTER'}
+          </button>
+        </form>
+      </div>
+    ) : (
+      <div className="profile-card">
+        <div className="user-avatar">
+          {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+        </div>
+        <h3>Welcome Back!</h3>
+        <p style={{marginBottom: '20px'}}>{user.email}</p>
+        <button className="logout-btn" onClick={() => signOut(auth)}>
+          LOGOUT
+        </button>
+      </div>
+    )}
+  </div>
+)}
+{/* =========================================
+    ORDER & PROFILE END
+    ========================================= */}
+
           </main>
 
           {/* NAVIGATION START */}
