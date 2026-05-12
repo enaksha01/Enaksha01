@@ -3,7 +3,13 @@ import './App.css';
 import Auth from './Auth';
 
 
-function App() {
+function App() { 
+  const [authMode, setAuthMode] = useState('login');
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [name, setName] = useState('');       // <--- Ye missing ho sakti hai
+const [username, setUsername] = useState(''); // <--- Ye bhi check kar
+  
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
