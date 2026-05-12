@@ -233,3 +233,31 @@ header {
 .profile-card { background: #ffffff; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 .user-avatar { width: 80px; height: 80px; background: #eb6923; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 15px; }
 .logout-btn { background: #ff4444; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; }
+/* PROFESSIONAL AUTH UI */
+.auth-wrapper { padding: 20px; display: flex; justify-content: center; }
+.auth-container {
+  background: #ffffff; width: 100%; max-width: 380px;
+  padding: 40px 25px; border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center;
+}
+.auth-brand { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; font-family: 'Montserrat', sans-serif; }
+.brand-e { color: #eb6923; }
+.auth-subtitle { font-size: 1rem; color: #5c5c5c; font-weight: 500; margin-top: 5px; }
+
+.input-group {
+  display: flex; align-items: center; background: #f4f7fa;
+  margin-bottom: 15px; padding: 12px 15px; border-radius: 15px;
+}
+.input-group i { color: #4b7dbd; margin-right: 15px; width: 20px; }
+.input-group input {
+  background: transparent; border: none; outline: none; width: 100%;
+  font-family: 'Poppins', sans-serif; font-size: 0.95rem;
+}
+.forgot-pass { text-align: right; font-size: 0.8rem; color: #4b7dbd; cursor: pointer; margin: -5px 5px 20px 0; }
+.auth-submit-btn {
+  width: 100%; padding: 16px; background: #eb6923; color: white;
+  border: none; border-radius: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 8px 20px rgba(235, 105, 35, 0.3); transition: 0.3s;
+}
+.auth-footer { margin-top: 25px; font-size: 0.9rem; color: #666; }
+.auth-footer span { color: #eb6923; font-weight: 700; cursor: pointer; }
