@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Auth from './Auth';
+import Auth from './Auth.jsx';
 
 
 function App() { 
