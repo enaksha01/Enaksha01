@@ -1,13 +1,24 @@
 import React from 'react';
 
-const Auth = ({ authMode, setAuthMode, handleAuth, setEmail, setPassword, setUsername, setName }) => {
+const Auth = ({ 
+  authMode, 
+  setAuthMode, 
+  handleAuth, 
+  setEmail, 
+  setPassword, 
+  setUsername, 
+  setName, 
+  handleForgotPassword 
+}) => {
   return (
     <div className="auth-wrapper">
       <div className="auth-container">
-        [span_6](start_span){/* Professional Header inside Form[span_6](end_span) */}
+        {/* Logo/Brand Header */}
         <div className="auth-brand">
           <span className="brand-e">e</span>-Naksha
-          <p className="auth-subtitle">{authMode === 'login' ? 'Login User' : 'Create Account'}</p>
+          <p className="auth-subtitle">
+            {authMode === 'login' ? 'Login to User Account' : 'Create Your Account'}
+          </p>
         </div>
 
         <form onSubmit={handleAuth} className="auth-form">
@@ -15,42 +26,64 @@ const Auth = ({ authMode, setAuthMode, handleAuth, setEmail, setPassword, setUse
             <>
               <div className="input-group">
                 <i className="fa-solid fa-user"></i>
-                <input type="text" placeholder="Full Name" onChange={(e) => setName(e.target.value)} required />
+                <input 
+                  type="text" 
+                  placeholder="Full Name" 
+                  onChange={(e) => setName(e.target.value)} 
+                  required 
+                />
               </div>
- 
               <div className="input-group">
                 <i className="fa-solid fa-at"></i>
-                <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} required />
+                <input 
+                  type="text" 
+                  placeholder="Username" 
+                  onChange={(e) => setUsername(e.target.value)} 
+                  required 
+                />
               </div>
             </>
           )}
 
           <div className="input-group">
             <i className="fa-solid fa-envelope"></i>
-            <input type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} required />
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
           </div>
 
           <div className="input-group">
             <i className="fa-solid fa-lock"></i>
-            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
+            <input 
+              type="password" 
+              placeholder="Password" 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
           </div>
 
           {authMode === 'login' && (
-            <div className="forgot-pass" style={{textAlign: 'right', fontSize: '0.8rem', color: '#4b7dbd', cursor: 'pointer', marginBottom: '15px'}}>
+            <div 
+              className="forgot-pass-link" 
+              onClick={handleForgotPassword}
+            >
               Forgot Password?
             </div>
           )}
 
           <button type="submit" className="auth-submit-btn">
-            {authMode === 'login' ? 'LOGIN' : 'CREATE ACCOUNT'}
+            {authMode === 'login' ? 'LOGIN NOW' : 'REGISTER ACCOUNT'}
           </button>
         </form>
 
         <div className="auth-footer">
           {authMode === 'login' ? (
-            <p>Don't have an account? <span style={{color: '#eb6923', fontWeight: '700', cursor: 'pointer'}} onClick={() => setAuthMode('signup')}>Create Account</span></p>
+            <p>Don't have an account? <span onClick={() => setAuthMode('signup')}>Sign Up</span></p>
           ) : (
-            <p>Already have an account? <span style={{color: '#eb6923', fontWeight: '700', cursor: 'pointer'}} onClick={() => setAuthMode('login')}>Login</span></p>
+            <p>Already have an account? <span onClick={() => setAuthMode('login')}>Sign In</span></p>
           )}
         </div>
       </div>
