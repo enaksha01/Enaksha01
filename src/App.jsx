@@ -20,6 +20,8 @@ const auth = getAuth(app);
 
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [activeTab, setActiveTab] = useState('home');
     const [user, setUser] = useState(null);
   const [authMode, setAuthMode] = useState('login');
   const [email, setEmail] = useState('');
@@ -59,8 +61,6 @@ function App() {
     } catch (err) { alert(err.message); }
   };
   
-  const [showSplash, setShowSplash] = useState(true);
-  const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formType, setFormType] = useState(null); // null, '2d', ya '3d'
   
@@ -244,4 +244,3 @@ function App() {
 
 export default App;
 
-        
