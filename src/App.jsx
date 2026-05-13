@@ -112,35 +112,66 @@ function App() {
         )}
 
         {activeTab === 'service' && (
-          <div className="content-section">
-            {!formType ? (
-              <>
-                <div className="service-card" onClick={() => setFormType('2d')}>
-                  <i className="fa-solid fa-ruler-combined"></i>
-                  <h3>2D Layout Plan</h3>
-                </div>
-                <div className="service-card" onClick={() => setFormType('3d')}>
-                  <i className="fa-solid fa-cube"></i>
-                  <h3>3D Elevation</h3>
-                </div>
-              </>
-            ) : (
-              <div className="form-container">
-                <button className="back-btn" onClick={() => setFormType(null)}>
-                  <i className="fa-solid fa-arrow-left"></i> Back to Services
-                </button>
-                <h2 className="form-title">{formType === '2d' ? '2D Layout' : '3D Elevation'}</h2>
-                <form onSubmit={(e) => { e.preventDefault(); alert("Proceeding to Payment..."); }}>
-                  <div className="input-group">
-                    <label>Plot Dimensions</label>
-                    <input type="text" className="form-input" placeholder="e.g. 20 x 50 ft" required />
-                  </div>
-                  <button type="submit" className="submit-btn">CONFIRM & PAY NOW</button>
-                </form>
-              </div>
-            )}
+  <div className="content-section">
+    {!formType ? (
+      <>
+        <div className="service-card" onClick={() => user ? setFormType('2d') : setActiveTab('profile')}>
+          <i className="fa-solid fa-ruler-combined"></i>
+          <h3>2D Layout Plan</h3>
+        </div>
+        <div className="service-card" onClick={() => user ? setFormType('3d') : setActiveTab('profile')}>
+          <i className="fa-solid fa-cube"></i>
+          <h3>3D Elevation</h3>
+        </div>
+      </>
+    ) : (
+      <div className="form-container">
+        <button className="back-btn" onClick={() => setFormType(null)}>← Back</button>
+        <h2 className="form-title">{formType === '2d' ? '2D Layout' : '3D Elevation'} Details</h2>
+        
+        <form onSubmit={handleOrderSubmit}>
+          <div className="input-group">
+            <label>Plot Dimensions (Length x Width)</label>
+            <input name="plotSize" type="text" className="form-input" placeholder="e.g. 30 x 50 ft" required />
           </div>
-        )}
+
+          <div className="input-group">
+            <label>Plot Facing</label>
+            <select name="facing" className="form-input">
+              <option>East</option><option>West</option><option>North</option><option>South</option>
+            </select>
+          </div>
+
+          {formType === '2d' && (
+            <div className="input-group">
+              <label>Washroom Preference</label>
+              <select name="washroom" className="form-input">
+                <option value="combined">Combined (Toilet + Bath)</option>
+                <option value="separate">Separate Toilet & Bath</option>
+                <option value="attached">Attached to Bedroom</option>
+              </select>
+            </div>
+          )}
+
+          <div className="input-group">
+            <label>Additional Requirements</label>
+            <textarea name="details" className="form-input" style={{height:'80px'}} placeholder="Rooms, style, etc." required></textarea>
+          </div>
+
+          <div className="input-group">
+            <label>Upload Plot Sketch / Site Photo</label>
+            <input name="siteFile" type="file" className="form-input" accept="image/*" required />
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={uploading}>
+            {uploading ? "Uploading Details..." : "CONFIRM & SAVE ORDER"}
+          </button>
+        </form>
+      </div>
+    )}
+  </div>
+)}
+
 
         {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
         
