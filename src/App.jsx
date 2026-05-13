@@ -1,29 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Auth from './Auth';
-import LayoutForm from './LayoutForm'; // Nayi file jo tu banayega
-import ElevationForm from './ElevationForm'; // Nayi file jo tu banayega
-import { initializeApp } from "firebase/app";
-import { 
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, sendPasswordResetEmail, signOut 
-} from "firebase/auth";
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyARmOCO4APamzc8wuUlp5rEgPH8hZUMX6U",
-  authDomain: "enkasha-99c34.firebaseapp.com",
-  projectId: "enkasha-99c34",
-  storageBucket: "enkasha-99c34.firebasestorage.app",
-  messagingSenderId: "759836461630",
-  appId: "1:759836461630:web:30cc76c2c1075a3df99f6f"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+import LayoutForm from './LayoutForm';
+import ElevationForm from './ElevationForm';
+import { account, databases, storage, APPWRITE_CONFIG } from './lib/appwrite';
+import { ID } from 'appwrite';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -35,63 +16,64 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
-    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
-    return () => { clearTimeout(timer); unsubscribe(); };
+    // Appwrite Auth Check
+    account.get()
+      .then((u) => setUser(u))
+      .catch(() => setUser(null));
+    return () => clearTimeout(timer);
   }, []);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
-      if (authMode === 'login') await signInWithEmailAndPassword(auth, email, password);
-      else await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      if (err.code === 'auth/wrong-password') alert("Invalid Password.");
-      else if (err.code === 'auth/user-not-found') alert("User not found.");
-      else alert(err.message);
-    }
+      if (authMode === 'login') {
+        await account.createEmailPasswordSession(email, password);
+      } else {
+        await account.create(ID.unique(), email, password, name);
+        await account.createEmailPasswordSession(email, password);
+      }
+      const u = await account.get();
+      setUser(u);
+    } catch (err) { alert(err.message); }
   };
 
-  const handleForgotPassword = async () => {
-    if (!email) return alert("Please enter email first.");
+  const handleLogout = async () => {
     try {
-      await sendPasswordResetEmail(auth, email);
-      alert("Reset link sent!");
+      await account.deleteSession('current');
+      setUser(null);
+      setActiveTab('home');
     } catch (err) { alert(err.message); }
   };
 
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
-    
     const file = e.target.elements.siteFile.files[0];
     if (!file) return alert("Please upload a file.");
-
     setUploading(true);
     try {
-      const storageRef = ref(storage, `orders/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const fileUrl = await getDownloadURL(storageRef);
-
-      await addDoc(collection(db, "orders"), {
-        userId: user.uid,
-        userEmail: user.email,
-        type: formType,
-        dimensions: e.target.elements.plotSize.value,
-        details: e.target.elements.details.value,
-        fileUrl: fileUrl,
-        createdAt: serverTimestamp()
-      });
-
+      const fileUpload = await storage.createFile(APPWRITE_CONFIG.bucketId, ID.unique(), file);
+      await databases.createDocument(
+        APPWRITE_CONFIG.dbId, 
+        APPWRITE_CONFIG.collectionId, 
+        ID.unique(),
+        {
+          userid: user.$id,
+          userEmail: user.email,
+          type: formType,
+          dimensions: e.target.elements.plotSize.value,
+          details: e.target.elements.details?.value || "N/A",
+          fileid: fileUpload.$id
+        }
+      );
       alert("Order Placed Successfully!");
       setFormType(null);
-    } catch (err) {
-      alert("Error: " + err.message);
-    } finally { setUploading(false); }
+    } catch (err) { alert("Error: " + err.message); }
+    finally { setUploading(false); }
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -117,7 +99,6 @@ function App() {
         <div className="header-logo-text"><span style={{ color: '#eb6923' }}>e</span>-Naksha</div>
         <div onClick={toggleMenu} style={{ cursor: 'pointer' }}><i className="fa-solid fa-bars-staggered"></i></div>
       </header>
-
       <main className="main-content">
         {activeTab === 'home' && (
           <div className="content-section">
@@ -128,7 +109,6 @@ function App() {
             </div>
           </div>
         )}
-
         {activeTab === 'service' && (
           <div className="content-section">
             {!formType ? (
@@ -150,42 +130,30 @@ function App() {
             )}
           </div>
         )}
-
-        {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>No orders yet.</p></div>}
-
+        {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>Check Appwrite Console for orders.</p></div>}
         {activeTab === 'profile' && (
           <div className="content-section">
             {!user ? (
               <Auth 
                 authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
                 setEmail={setEmail} setPassword={setPassword} setName={setName} 
-                setUsername={setUsername} handleForgotPassword={handleForgotPassword}
               />
             ) : (
               <div className="profile-card">
                 <div className="user-avatar">{user.email?.charAt(0).toUpperCase()}</div>
                 <h3>My Account</h3>
                 <p>{user.email}</p>
-                <button className="logout-btn" onClick={() => signOut(auth)}>LOGOUT</button>
+                <button className="logout-btn" onClick={handleLogout}>LOGOUT</button>
               </div>
             )}
           </div>
         )}
       </main>
-
       <nav className="bottom-nav">
-        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
-          <i className="fa-solid fa-house"></i><span>Home</span>
-        </div>
-        <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}>
-          <i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span>
-        </div>
-        <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}>
-          <i className="fa-solid fa-cart-shopping"></i><span>Order</span>
-        </div>
-        <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
-          <i className="fa-solid fa-user"></i><span>Profile</span>
-        </div>
+        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}><i className="fa-solid fa-house"></i><span>Home</span></div>
+        <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}><i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span></div>
+        <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}><i className="fa-solid fa-cart-shopping"></i><span>Order</span></div>
+        <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fa-solid fa-user"></i><span>Profile</span></div>
       </nav>
     </div>
   );
