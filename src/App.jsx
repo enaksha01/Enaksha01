@@ -3,7 +3,8 @@ import './App.css';
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
-import { supabase } from './lib/supabase'; // Teri connection file
+import Orders from './Orders'; // Naya component import kiya
+import { supabase } from './lib/supabase';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -19,7 +20,6 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
-    // Supabase Auth Check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
@@ -36,102 +36,140 @@ function App() {
         ? await supabase.auth.signInWithPassword({ email, password })
         : await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
       if (error) throw error;
-    } catch (err) { alert(err.message); }
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const handleForgotPassword = async () => {
-    if (!email) return alert("Please enter email first.");
+    if (!email) return alert("Please enter your email");
     const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) alert(error.message); else alert("Reset link sent!");
+    alert(error ? error.message : "Password reset link sent to your email!");
   };
 
+  // --- Naya Handle Order Submit (Payment + Formula logic) ---
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
-    const file = e.target.elements.siteFile.files[0];
-    if (!file) return alert("Please upload a file.");
-    setUploading(true);
+    
+    const form = e.target;
+    const file = form.elements.siteFile.files[0];
+    if (!file) return alert("Please upload a site photo/sketch.");
 
-    try {
-      const fileName = `${user.id}/${Date.now()}_${file.name}`;
-      const { error: upError } = await supabase.storage.from('site-images').upload(fileName, file);
-      if (upError) throw upError;
+    const options = {
+      key: "Rzp_test_Sk3KAPlDWASFJY", // Teri Razorpay Key
+      amount: 100, // ₹1
+      currency: "INR",
+      name: "e-Naksha",
+      description: "Architectural Service Fee",
+      theme: { color: "#eb6923" },
+      handler: async function (response) {
+        setUploading(true);
+        try {
+          // 1. Photo Upload
+          const fileName = `${user.id}/${Date.now()}_${file.name}`;
+          const { error: upError } = await supabase.storage.from('site-images').upload(fileName, file);
+          if (upError) throw upError;
 
-      const { data: urlData } = supabase.storage.from('site-images').getPublicUrl(fileName);
+          const { data: urlData } = supabase.storage.from('site-images').getPublicUrl(fileName);
 
-      const { error: dbError } = await supabase.from('orders').insert([{
-        user_id: user.id,
-        user_email: user.email,
-        type: formType,
-        dimensions: e.target.elements.plotSize.value,
-        details: e.target.elements.details?.value || "N/A",
-        file_url: urlData.publicUrl
-      }]);
+          // 2. Database Entry with Payment Success
+          const { error: dbError } = await supabase.from('orders').insert([{
+            user_id: user.id,
+            user_email: user.email,
+            type: formType,
+            dimensions: form.elements.plotSize.value,
+            details: form.elements.details.value,
+            file_url: urlData.publicUrl,
+            payment_status: 'Success'
+          }]);
 
-      if (dbError) throw dbError;
-      alert("Order Placed Successfully!");
-      setFormType(null);
-    } catch (err) { alert("Error: " + err.message); }
-    finally { setUploading(false); }
+          if (dbError) throw dbError;
+          
+          alert("Order & Payment Successful!");
+          setFormType(null);
+          setActiveTab('order'); // Sidha Orders page par bhejo
+        } catch (err) {
+          alert("System Error: " + err.message);
+        } finally {
+          setUploading(false);
+        }
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   if (showSplash) {
     return (
-      <div id="splash-screen">
-        <div className="intro-container">
-          <svg className="intro-house-svg" viewBox="0 0 120 100">
-            <path className="intro-layer-orange" d="M 60 30 L 95 65 V 95 H 75 V 70 H 55 V 95 H 40 V 50 Z" fill="#eb6923" />
-            <path className="intro-layer-blue" d="M 15 70 L 60 25 L 85 50 L 70 65 L 60 55 L 35 80 Z" fill="#4b7dbd" />
-          </svg>
-          <div className="intro-text"><span style={{color: '#eb6923'}}>e</span>-Naksha</div>
-          <div className="intro-slogan">Sketch Your Dream</div>
-        </div>
+      <div className="splash-screen">
+        <div className="splash-logo">e-Naksha</div>
+        <div className="loader-line"></div>
       </div>
     );
   }
 
   return (
     <div className="app-container">
-      <header id="main-header">
-        <div className="header-logo-text"><span style={{ color: '#eb6923' }}>e</span>-Naksha</div>
-        <div onClick={toggleMenu} style={{ cursor: 'pointer' }}><i className="fa-solid fa-bars-staggered"></i></div>
+      <header className="main-header">
+        <div className="logo-section">
+          <div className="logo-icon"><i className="fa-solid fa-compass-drafting"></i></div>
+          <h1>e-Naksha</h1>
+        </div>
+        <button className="menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+        </button>
       </header>
-      <main className="main-content">
+
+      <main className="content-area">
         {activeTab === 'home' && (
-          <div className="content-section">
-            <h3>Portfolio</h3>
-            <div className="portfolio-grid">
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Duplex" /></div>
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="3D" /></div>
+          <div className="home-hero">
+            <h2>Modern Architectural Solutions</h2>
+            <p>Get professional 2D & 3D designs for your dream project.</p>
+            <div className="hero-stats">
+              <div className="stat-item"><span>500+</span><label>Plans</label></div>
+              <div className="stat-item"><span>100%</span><label>Quality</label></div>
             </div>
           </div>
         )}
+
         {activeTab === 'service' && (
-          <div className="content-section">
+          <div className="services-grid">
             {!formType ? (
-              <div className="service-grid">
-                <div className="service-card" onClick={() => user ? setFormType('2d') : setActiveTab('profile')}>
-                  <i className="fa-solid fa-ruler-combined"></i>
+              <>
+                <div className="service-card" onClick={() => setFormType('2D Layout')}>
+                  <i className="fa-solid fa-map"></i>
                   <h3>2D Layout Plan</h3>
+                  <button className="select-btn">Start Project</button>
                 </div>
-                <div className="service-card" onClick={() => user ? setFormType('3d') : setActiveTab('profile')}>
+                <div className="service-card" onClick={() => setFormType('3D Elevation')}>
                   <i className="fa-solid fa-cube"></i>
                   <h3>3D Elevation</h3>
+                  <button className="select-btn">Start Project</button>
                 </div>
-              </div>
-            ) : (
-              <>
-                {formType === '2d' && <LayoutForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
-                {formType === '3d' && <ElevationForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
               </>
+            ) : (
+              <div className="form-container">
+                <button className="back-btn" onClick={() => setFormType(null)}>← Back</button>
+                {formType === '2D Layout' ? (
+                  <LayoutForm onSubmit={handleOrderSubmit} uploading={uploading} />
+                ) : (
+                  <ElevationForm onSubmit={handleOrderSubmit} uploading={uploading} />
+                )}
+              </div>
             )}
           </div>
         )}
-        {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>Data synced with Supabase.</p></div>}
+
+        {activeTab === 'order' && (
+          <div className="orders-section">
+            {user ? <Orders user={user} /> : <p className="login-msg">Please login to see orders</p>}
+          </div>
+        )}
+
         {activeTab === 'profile' && (
-          <div className="content-section">
+          <div className="profile-section">
             {!user ? (
               <Auth 
                 authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
@@ -149,11 +187,20 @@ function App() {
           </div>
         )}
       </main>
+
       <nav className="bottom-nav">
-        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}><i className="fa-solid fa-house"></i><span>Home</span></div>
-        <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}><i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span></div>
-        <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}><i className="fa-solid fa-cart-shopping"></i><span>Order</span></div>
-        <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fa-solid fa-user"></i><span>Profile</span></div>
+        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
+          <i className="fa-solid fa-house"></i><span>Home</span>
+        </div>
+        <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}>
+          <i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span>
+        </div>
+        <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}>
+          <i className="fa-solid fa-cart-shopping"></i><span>Order</span>
+        </div>
+        <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>
+          <i className="fa-solid fa-user"></i><span>Profile</span>
+        </div>
       </nav>
     </div>
   );
