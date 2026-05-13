@@ -3,8 +3,7 @@ import './App.css';
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
-import { account, databases, storage, APPWRITE_CONFIG } from './lib/appwrite';
-import { ID } from 'appwrite';
+import { supabase } from './lib/supabase'; // Teri connection file
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -20,33 +19,30 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
-    // Appwrite Auth Check
-    account.get()
-      .then((u) => setUser(u))
-      .catch(() => setUser(null));
-    return () => clearTimeout(timer);
+    // Supabase Auth Check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => { clearTimeout(timer); subscription.unsubscribe(); };
   }, []);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
-      if (authMode === 'login') {
-        await account.createEmailPasswordSession(email, password);
-      } else {
-        await account.create(ID.unique(), email, password, name);
-        await account.createEmailPasswordSession(email, password);
-      }
-      const u = await account.get();
-      setUser(u);
+      const { error } = authMode === 'login' 
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+      if (error) throw error;
     } catch (err) { alert(err.message); }
   };
 
-  const handleLogout = async () => {
-    try {
-      await account.deleteSession('current');
-      setUser(null);
-      setActiveTab('home');
-    } catch (err) { alert(err.message); }
+  const handleForgotPassword = async () => {
+    if (!email) return alert("Please enter email first.");
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) alert(error.message); else alert("Reset link sent!");
   };
 
   const handleOrderSubmit = async (e) => {
@@ -55,21 +51,24 @@ function App() {
     const file = e.target.elements.siteFile.files[0];
     if (!file) return alert("Please upload a file.");
     setUploading(true);
+
     try {
-      const fileUpload = await storage.createFile(APPWRITE_CONFIG.bucketId, ID.unique(), file);
-      await databases.createDocument(
-        APPWRITE_CONFIG.dbId, 
-        APPWRITE_CONFIG.collectionId, 
-        ID.unique(),
-        {
-          userid: user.$id,
-          userEmail: user.email,
-          type: formType,
-          dimensions: e.target.elements.plotSize.value,
-          details: e.target.elements.details?.value || "N/A",
-          fileid: fileUpload.$id
-        }
-      );
+      const fileName = `${user.id}/${Date.now()}_${file.name}`;
+      const { error: upError } = await supabase.storage.from('site-images').upload(fileName, file);
+      if (upError) throw upError;
+
+      const { data: urlData } = supabase.storage.from('site-images').getPublicUrl(fileName);
+
+      const { error: dbError } = await supabase.from('orders').insert([{
+        user_id: user.id,
+        user_email: user.email,
+        type: formType,
+        dimensions: e.target.elements.plotSize.value,
+        details: e.target.elements.details?.value || "N/A",
+        file_url: urlData.publicUrl
+      }]);
+
+      if (dbError) throw dbError;
       alert("Order Placed Successfully!");
       setFormType(null);
     } catch (err) { alert("Error: " + err.message); }
@@ -130,20 +129,21 @@ function App() {
             )}
           </div>
         )}
-        {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>Check Appwrite Console for orders.</p></div>}
+        {activeTab === 'order' && <div className="content-section"><h2>Orders</h2><p>Data synced with Supabase.</p></div>}
         {activeTab === 'profile' && (
           <div className="content-section">
             {!user ? (
               <Auth 
                 authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
                 setEmail={setEmail} setPassword={setPassword} setName={setName} 
+                handleForgotPassword={handleForgotPassword}
               />
             ) : (
               <div className="profile-card">
                 <div className="user-avatar">{user.email?.charAt(0).toUpperCase()}</div>
                 <h3>My Account</h3>
                 <p>{user.email}</p>
-                <button className="logout-btn" onClick={handleLogout}>LOGOUT</button>
+                <button className="logout-btn" onClick={() => supabase.auth.signOut()}>LOGOUT</button>
               </div>
             )}
           </div>
@@ -160,4 +160,3 @@ function App() {
 }
 
 export default App;
-            
