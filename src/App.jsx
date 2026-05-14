@@ -3,7 +3,7 @@ import './App.css';
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
-import Orders from './Orders'; // Ye file tune bana li hai na?
+import Orders from './Orders'; 
 import { supabase } from './lib/supabase';
 
 function App() {
@@ -48,22 +48,24 @@ function App() {
   // --- NYA PAYMENT + ORDER SUBMIT LOGIC ---
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
+    
+    // YEH RHA TERA TEST ALERT
+    alert("Button Pressed! Payment function starting..."); 
+
     if (!user) { setActiveTab('profile'); return; }
 
     const form = e.target;
     const file = form.elements.siteFile.files[0];
     if (!file) return alert("Please upload a file.");
 
-    // Razorpay Checkout Options
     const options = {
-      key: "Rzp_test_Sk3KAPlDWASFJY", // Teri provided test key
-      amount: 100, // ₹1 = 100 Paise
+      key: "Rzp_test_Sk3KAPlDWASFJY", 
+      amount: 100, 
       currency: "INR",
       name: "e-Naksha",
       description: "Service Booking Fee",
       theme: { color: "#eb6923" },
       handler: async function (response) {
-        // Ye tab chalega jab payment SUCCESS ho jaye
         setUploading(true);
         try {
           const fileName = `${user.id}/${Date.now()}_${file.name}`;
@@ -79,23 +81,22 @@ function App() {
             dimensions: form.elements.plotSize.value,
             details: form.elements.details?.value || "N/A",
             file_url: urlData.publicUrl,
-            payment_status: 'Success' // Payment ke baad status Success
+            payment_status: 'Success' 
           }]);
 
           if (dbError) throw dbError;
           
           alert("Order & Payment Successful!");
           setFormType(null);
-          setActiveTab('order'); // Sidha Orders page par bhejo
+          setActiveTab('order');
         } catch (err) { 
-          alert("Error: " + err.message); 
+          alert("Error: " + err.message);
         } finally { 
-          setUploading(false); 
+          setUploading(false);
         }
       }
     };
 
-    // Razorpay Window Open Karo
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
