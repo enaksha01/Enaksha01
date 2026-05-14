@@ -105,8 +105,16 @@ const Orders = ({ user }) => {
                 )}
 
                 {order.payment_status === 'Completed' && (
-                  <div className="status-msg completed">Project Completed ✅</div>
-                )}
+  <div className="completed-box">
+    <div className="status-msg completed">Project Completed ✅</div>
+    {order.pdf_url && (
+      <a href={order.pdf_url} className="view-btn-small" target="_blank" rel="noreferrer">
+        <i className="fa-solid fa-eye"></i> VIEW PLAN
+      </a>
+    )}
+  </div>
+)}
+
               </div>
             </div>
           ))
