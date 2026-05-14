@@ -15,7 +15,7 @@ const Orders = ({ user }) => {
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
-        [span_4](start_span).order('id', { ascending: false });[span_4](end_span)
+        .order('id', { ascending: false });
       if (error) throw error;
       setMyOrders(data);
     } catch (err) {
@@ -25,13 +25,12 @@ const Orders = ({ user }) => {
     }
   };
 
-  // --- YE SIRF EK HI ORDER DELETE KAREGA ---
   const handleCancel = async (orderId) => {
     if (window.confirm("Bhai, pakka sirf yahi order hatana hai?")) {
       const { error } = await supabase
         .from('orders')
         .delete()
-        .eq('id', orderId); [span_5](start_span)// targeted delete[span_5](end_span)
+        .eq('id', orderId);
       
       if (error) alert(error.message);
       else fetchOrders(); 
@@ -39,8 +38,17 @@ const Orders = ({ user }) => {
   };
 
   const handleDownload = async (orderId) => {
-    [span_6](start_span)await supabase.from('orders').update({ payment_status: 'Completed' }).eq('id', orderId);[span_6](end_span)
-    fetchOrders();
+    // Semicolon aur structure saaf kar diya build ke liye
+    try {
+      await supabase
+        .from('orders')
+        .update({ payment_status: 'Completed' })
+        .eq('id', orderId);
+      
+      fetchOrders();
+    } catch (err) {
+      console.error("Download update failed:", err.message);
+    }
   };
 
   if (loading) return <div className="p-4 text-center">Loading Orders...</div>;
@@ -56,23 +64,21 @@ const Orders = ({ user }) => {
             <div className="order-card-premium" key={order.id}>
               <div className="card-top">
                 <span className="type-tag">{order.type}</span>
-                {/* CANCEL BUTTON: Sirf ek order ke liye */}
                 <button className="delete-btn-icon" onClick={() => handleCancel(order.id)}>
                   <i className="fa-solid fa-trash-can"></i>
                 </button>
               </div>
 
-              {/* TRACKING BAR: Jo tune manga tha */}
               <div className="tracking-bar-container">
                 <div className={`track-step ${order.razorpay_payment_id ? 'done' : ''}`}>
                   <div className="dot">1</div>
                   <span>Payment</span>
                 </div>
-                <div className={`track-step ${order.payment_status === 'Success' || order.payment_status === 'Sent' ? 'active' : ''}`}>
+                <div className={`track-step ${order.payment_status === 'Success' || order.payment_status === 'Sent' || order.payment_status === 'Completed' ? 'active' : ''}`}>
                   <div className="dot">2</div>
                   <span>Design</span>
                 </div>
-                <div className={`track-step ${order.payment_status === 'Sent' ? 'active' : ''}`}>
+                <div className={`track-step ${order.payment_status === 'Sent' || order.payment_status === 'Completed' ? 'active' : ''}`}>
                   <div className="dot">3</div>
                   <span>Delivery</span>
                 </div>
