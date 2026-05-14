@@ -3,7 +3,7 @@ import './App.css';
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
-import Orders from './Orders'; // Ye file tune bana li hai na?
+import Orders from './Orders'; 
 import { supabase } from './lib/supabase';
 
 function App() {
@@ -45,25 +45,27 @@ function App() {
     if (error) alert(error.message); else alert("Reset link sent!");
   };
 
-  // --- NYA PAYMENT + ORDER SUBMIT LOGIC ---
+  // --- handleOrderSubmit (Sirf Live Key update ki hai) ---
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
+    if (!window.Razorpay) {
+      alert("Razorpay load ho raha hai, ek second ruko.");
+      return;
+    }
 
     const form = e.target;
     const file = form.elements.siteFile.files[0];
     if (!file) return alert("Please upload a file.");
 
-    // Razorpay Checkout Options
     const options = {
-      key: "Rzp_test_Sk3KAPlDWASFJY", // Teri provided test key
-      amount: 100, // ₹1 = 100 Paise
+      key: "rzp_live_SpD9DCrPBHSi4S", // Teri Original Live Key
+      amount: 100, // ₹1
       currency: "INR",
       name: "e-Naksha",
       description: "Service Booking Fee",
       theme: { color: "#eb6923" },
       handler: async function (response) {
-        // Ye tab chalega jab payment SUCCESS ho jaye
         setUploading(true);
         try {
           const fileName = `${user.id}/${Date.now()}_${file.name}`;
@@ -79,23 +81,23 @@ function App() {
             dimensions: form.elements.plotSize.value,
             details: form.elements.details?.value || "N/A",
             file_url: urlData.publicUrl,
-            payment_status: 'Success' // Payment ke baad status Success
+            payment_status: 'Success',
+            razorpay_payment_id: response.razorpay_payment_id
           }]);
 
           if (dbError) throw dbError;
           
-          alert("Order & Payment Successful!");
+          alert("Payment Successful! Order placed ho gaya.");
           setFormType(null);
-          setActiveTab('order'); // Sidha Orders page par bhejo
+          setActiveTab('order');
         } catch (err) { 
-          alert("Error: " + err.message); 
+          alert("System Error: " + err.message);
         } finally { 
-          setUploading(false); 
+          setUploading(false);
         }
       }
     };
 
-    // Razorpay Window Open Karo
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
@@ -125,8 +127,8 @@ function App() {
           <div className="content-section">
             <h3>Portfolio</h3>
             <div className="portfolio-grid">
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Duplex" /></div>
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="3D" /></div>
+              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Work" /></div>
+              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="Work" /></div>
             </div>
           </div>
         )}
