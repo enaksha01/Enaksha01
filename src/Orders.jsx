@@ -15,8 +15,7 @@ const Orders = ({ user }) => {
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
-        .order('id', { ascending: false });
-
+        [span_4](start_span).order('id', { ascending: false });[span_4](end_span)
       if (error) throw error;
       setMyOrders(data);
     } catch (err) {
@@ -26,9 +25,21 @@ const Orders = ({ user }) => {
     }
   };
 
+  // --- YE SIRF EK HI ORDER DELETE KAREGA ---
+  const handleCancel = async (orderId) => {
+    if (window.confirm("Bhai, pakka sirf yahi order hatana hai?")) {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId); [span_5](start_span)// targeted delete[span_5](end_span)
+      
+      if (error) alert(error.message);
+      else fetchOrders(); 
+    }
+  };
+
   const handleDownload = async (orderId) => {
-    // PDF download hone par status 'Completed' kar dega
-    await supabase.from('orders').update({ payment_status: 'Completed' }).eq('id', orderId);
+    [span_6](start_span)await supabase.from('orders').update({ payment_status: 'Completed' }).eq('id', orderId);[span_6](end_span)
     fetchOrders();
   };
 
@@ -45,9 +56,26 @@ const Orders = ({ user }) => {
             <div className="order-card-premium" key={order.id}>
               <div className="card-top">
                 <span className="type-tag">{order.type}</span>
-                <span className={`status-pill ${order.payment_status?.toLowerCase()}`}>
-                  {order.payment_status || 'Pending'}
-                </span>
+                {/* CANCEL BUTTON: Sirf ek order ke liye */}
+                <button className="delete-btn-icon" onClick={() => handleCancel(order.id)}>
+                  <i className="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+
+              {/* TRACKING BAR: Jo tune manga tha */}
+              <div className="tracking-bar-container">
+                <div className={`track-step ${order.razorpay_payment_id ? 'done' : ''}`}>
+                  <div className="dot">1</div>
+                  <span>Payment</span>
+                </div>
+                <div className={`track-step ${order.payment_status === 'Success' || order.payment_status === 'Sent' ? 'active' : ''}`}>
+                  <div className="dot">2</div>
+                  <span>Design</span>
+                </div>
+                <div className={`track-step ${order.payment_status === 'Sent' ? 'active' : ''}`}>
+                  <div className="dot">3</div>
+                  <span>Delivery</span>
+                </div>
               </div>
 
               <div className="card-details">
@@ -56,30 +84,20 @@ const Orders = ({ user }) => {
               </div>
 
               <div className="card-actions">
-                {/* Case 1: Payment Pending */}
                 {(!order.payment_status || order.payment_status === 'Pending') && (
                   <div className="status-msg pending">Payment Pending</div>
                 )}
 
-                {/* Case 2: Payment Success, PDF Not Sent */}
                 {order.payment_status === 'Success' && (
                   <div className="status-msg success">Working on your plan...</div>
                 )}
 
-                {/* Case 3: PDF Sent by Admin */}
                 {order.payment_status === 'Sent' && order.pdf_url && (
-                  <a 
-                    href={order.pdf_url} 
-                    className="download-btn" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    onClick={() => handleDownload(order.id)}
-                  >
+                  <a href={order.pdf_url} className="download-btn" target="_blank" rel="noreferrer" onClick={() => handleDownload(order.id)}>
                     DOWNLOAD PDF PLAN
                   </a>
                 )}
 
-                {/* Case 4: Project Finished */}
                 {order.payment_status === 'Completed' && (
                   <div className="status-msg completed">Project Completed ✅</div>
                 )}
@@ -93,4 +111,3 @@ const Orders = ({ user }) => {
 };
 
 export default Orders;
-      
