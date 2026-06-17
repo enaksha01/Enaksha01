@@ -24,10 +24,11 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
       {/* Logo Section */}
       <div className="flex items-center gap-2 active:scale-95 transition-transform duration-200 cursor-pointer">
         <img 
-          src="/logo.png" 
-          alt="e-Naksha Logo" 
-          className="h-10 w-auto object-contain dark:brightness-110"
-        />
+  src="/logo.png" 
+  alt="e-Naksha Logo" 
+  className="h-16 sm:h-20 w-auto object-contain dark:brightness-110 transition-all duration-200"
+/>
+
       </div>
 
       {/* Right Side Controls */}
