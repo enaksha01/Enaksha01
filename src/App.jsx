@@ -107,18 +107,21 @@ function App() {
     rzp.open();
   };
 
-  if (showSplash) {
+    if (showSplash) {
     return (
-      <div id="splash-screen" className="fixed inset-0 bg-white dark:bg-slate-900 flex items-center justify-center z-50">
-        <div className="text-center animate-bounce">
-          <div className="text-4xl font-extrabold text-slate-800 dark:text-white tracking-wider">
-            <span className="text-[#eb6923]">e</span>-Naksha
-          </div>
-          <div className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-2 tracking-widest uppercase">Sketch Your Dream</div>
+      <div id="splash-screen" className="fixed inset-0 bg-white dark:bg-slate-950 flex flex-col items-center justify-center z-50 transition-colors duration-300">
+        <div className="text-center animate-bounce flex flex-col items-center justify-center px-6">
+          {/* Real logo image inside splash screen */}
+          <img 
+            src="/logo.png" 
+            alt="e-Naksha Splash Logo" 
+            className="w-48 h-auto object-contain dark:brightness-110 mb-4"
+          />
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors duration-300">
