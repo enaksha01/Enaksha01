@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { supabase } from './lib/supabase';
+
+// Naye Modular Components Ko Import Kiya
+import Header from './components/Header';
+import BottomNavigation from './components/BottomNavigation';
+
+// Baki puraane sub-forms (Inhe hum baad mein modular karenge, abhi chalne ke liye)
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
 import Orders from './Orders'; 
-import { supabase } from './lib/supabase';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -45,7 +51,6 @@ function App() {
     if (error) alert(error.message); else alert("Reset link sent!");
   };
 
-  // --- handleOrderSubmit (Sirf Live Key update ki hai) ---
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
@@ -102,93 +107,112 @@ function App() {
     rzp.open();
   };
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
   if (showSplash) {
     return (
-      <div id="splash-screen">
-        <div className="intro-container">
-          <div className="intro-text"><span style={{color: '#eb6923'}}>e</span>-Naksha</div>
-          <div className="intro-slogan">Sketch Your Dream</div>
+      <div id="splash-screen" className="fixed inset-0 bg-white dark:bg-slate-900 flex items-center justify-center z-50">
+        <div className="text-center animate-bounce">
+          <div className="text-4xl font-extrabold text-slate-800 dark:text-white tracking-wider">
+            <span className="text-[#eb6923]">e</span>-Naksha
+          </div>
+          <div className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-2 tracking-widest uppercase">Sketch Your Dream</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
-      <header id="main-header">
-        <div className="header-logo-text"><span style={{ color: '#eb6923' }}>e</span>-Naksha</div>
-        <div onClick={toggleMenu} style={{ cursor: 'pointer' }}><i className="fa-solid fa-bars-staggered"></i></div>
-      </header>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors duration-300">
+      
+      {/* 1. Naya Premium Header lagaya */}
+      <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
-      <main className="main-content">
+      {/* Main Content Area */}
+      <main className="max-w-md mx-auto px-4 mt-6">
+        
         {activeTab === 'home' && (
-          <div className="content-section">
-            <h3>Portfolio</h3>
-            <div className="portfolio-grid">
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Work" /></div>
-              <div className="portfolio-item"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="Work" /></div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold border-b pb-2 border-gray-200 dark:border-slate-800">Portfolio</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-2xl overflow-hidden shadow-md active:scale-95 transition-transform duration-200 border border-transparent dark:border-slate-800">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Work" className="w-full h-40 object-cover" />
+              </div>
+              <div className="rounded-2xl overflow-hidden shadow-md active:scale-95 transition-transform duration-200 border border-transparent dark:border-slate-800">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="Work" className="w-full h-40 object-cover" />
+              </div>
             </div>
           </div>
         )}
 
         {activeTab === 'service' && (
-          <div className="content-section">
+          <div className="space-y-4">
             {!formType ? (
-              <div className="service-grid">
-                <div className="service-card" onClick={() => user ? setFormType('2d') : setActiveTab('profile')}>
-                  <i className="fa-solid fa-ruler-combined"></i>
-                  <h3>2D Layout Plan</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {/* 2D Card - Clicking Border Effect */}
+                <div 
+                  onClick={() => user ? setFormType('2d') : setActiveTab('profile')}
+                  className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
+                >
+                  <i className="fa-solid fa-ruler-combined text-2xl text-[#eb6923] mb-3"></i>
+                  <h3 className="font-bold text-sm">2D Layout Plan</h3>
                 </div>
-                <div className="service-card" onClick={() => user ? setFormType('3d') : setActiveTab('profile')}>
-                  <i className="fa-solid fa-cube"></i>
-                  <h3>3D Elevation</h3>
+                {/* 3D Card - Clicking Border Effect */}
+                <div 
+                  onClick={() => user ? setFormType('3d') : setActiveTab('profile')}
+                  className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
+                >
+                  <i className="fa-solid fa-cube text-2xl text-[#eb6923] mb-3"></i>
+                  <h3 className="font-bold text-sm">3D Elevation</h3>
                 </div>
               </div>
             ) : (
-              <>
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
                 {formType === '2d' && <LayoutForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
                 {formType === '3d' && <ElevationForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
-              </>
+              </div>
             )}
           </div>
         )}
 
         {activeTab === 'order' && (
-          <div className="content-section">
-            {user ? <Orders user={user} /> : <p>Please login to see orders.</p>}
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+            {user ? <Orders user={user} /> : <p className="text-center text-gray-500">Please login to see orders.</p>}
           </div>
         )}
 
         {activeTab === 'profile' && (
-          <div className="content-section">
+          <div className="space-y-4">
             {!user ? (
-              <Auth 
-                authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
-                setEmail={setEmail} setPassword={setPassword} setName={setName} 
-                handleForgotPassword={handleForgotPassword}
-              />
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+                <Auth 
+                  authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
+                  setEmail={setEmail} setPassword={setPassword} setName={setName} 
+                  handleForgotPassword={handleForgotPassword}
+                />
+              </div>
             ) : (
-              <div className="profile-card">
-                <div className="user-avatar">{user.email?.charAt(0).toUpperCase()}</div>
-                <h3>My Account</h3>
-                <p>{user.email}</p>
-                <button className="logout-btn" onClick={() => supabase.auth.signOut()}>LOGOUT</button>
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-[#eb6923] text-white font-bold text-xl flex items-center justify-center shadow-md mb-3">
+                  {user.email?.charAt(0).toUpperCase()}
+                </div>
+                <h3 className="text-lg font-bold">My Account</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">{user.email}</p>
+                <button 
+                  className="w-full py-2.5 rounded-xl border-b-4 border border-red-600 bg-red-500 text-white font-bold tracking-wide active:scale-95 active:border-b transition-all duration-150"
+                  onClick={() => supabase.auth.signOut()}
+                >
+                  LOGOUT
+                </button>
               </div>
             )}
           </div>
         )}
       </main>
 
-      <nav className="bottom-nav">
-        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}><i className="fa-solid fa-house"></i><span>Home</span></div>
-        <div className={`nav-item ${activeTab === 'service' ? 'active' : ''}`} onClick={() => setActiveTab('service')}><i className="fa-solid fa-screwdriver-wrench"></i><span>Service</span></div>
-        <div className={`nav-item ${activeTab === 'order' ? 'active' : ''}`} onClick={() => setActiveTab('order')}><i className="fa-solid fa-cart-shopping"></i><span>Order</span></div>
-        <div className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}><i className="fa-solid fa-user"></i><span>Profile</span></div>
-      </nav>
+      {/* 2. Naya Premium Bottom Navigation lagaya */}
+      <BottomNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
 
 export default App;
+                
