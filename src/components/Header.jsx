@@ -19,21 +19,22 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 shadow-sm px-4 py-2.5 flex items-center justify-between transition-all duration-300">
       
-      {/* 🏠 Naya Split Logo Section (Left Side) */}
-      <div className="flex items-center gap-2 active:scale-95 transition-transform duration-200 cursor-pointer">
+            {/* 🏠 Ecore Theme Split Logo Section (Bottom-aligned & Closer) */}
+      <div className="flex items-end gap-1 active:scale-95 transition-transform duration-200 cursor-pointer mb-1">
         {/* House Icon Part */}
         <img 
           src="/svg.png" 
           alt="e-Naksha Icon" 
           className="h-12 w-auto object-contain dark:brightness-110"
         />
-        {/* Text Part */}
+        {/* Text Part (Bottom aligned & adjusted padding for perfect alignment) */}
         <img 
           src="/text.png" 
           alt="e-Naksha Text" 
-          className="h-9 w-auto object-contain dark:brightness-110"
+          className="h-8 w-auto object-contain dark:brightness-110 pb-0.5"
         />
       </div>
+
 
       {/* Right Side Controls */}
       <div className="flex items-center gap-3">
