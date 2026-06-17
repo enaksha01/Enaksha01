@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 function Header({ isMenuOpen, setIsMenuOpen }) {
-  // Check if theme exists in localStorage, otherwise default to light
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
 
-  // Apply theme to HTML tag whenever darkMode changes
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
@@ -19,33 +17,39 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
   }, [darkMode]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 shadow-sm px-5 py-3 flex items-center justify-between transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 shadow-sm px-4 py-2.5 flex items-center justify-between transition-all duration-300">
       
-      {/* Logo Section */}
+      {/* 🏠 Naya Split Logo Section (Left Side) */}
       <div className="flex items-center gap-2 active:scale-95 transition-transform duration-200 cursor-pointer">
+        {/* House Icon Part */}
         <img 
-  src="/logo.png" 
-  alt="e-Naksha Logo" 
-  className="h-16 sm:h-20 w-auto object-contain dark:brightness-110 transition-all duration-200"
-/>
-
+          src="/svg.png" 
+          alt="e-Naksha Icon" 
+          className="h-12 w-auto object-contain dark:brightness-110"
+        />
+        {/* Text Part */}
+        <img 
+          src="/text.png" 
+          alt="e-Naksha Text" 
+          className="h-9 w-auto object-contain dark:brightness-110"
+        />
       </div>
 
       {/* Right Side Controls */}
       <div className="flex items-center gap-3">
         
-        {/* 🌙 Light/Dark Mode Toggle Button */}
+        {/* 🌙 Dark Mode Toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 shadow-sm transition-all duration-200 active:scale-90 active:border-b-2 active:translate-y-[1px]"
         >
-          <i className={`fa-solid ${darkMode ? 'fa-sun text-yellow-400' : 'fa-moon text-brandBlue'} text-lg`}></i>
+          <i className={`fa-solid ${darkMode ? 'fa-sun text-yellow-400' : 'fa-moon text-[#4a77b3]'} text-lg`}></i>
         </button>
 
         {/* Hamburger Menu */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 shadow-sm transition-all duration-200 hover:border-brandOrange dark:hover:border-brandOrange hover:text-brandOrange active:scale-90 active:border-b-2 active:translate-y-[1px]"
+          className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 shadow-sm transition-all duration-200 hover:border-[#eb6923] dark:hover:border-[#eb6923] hover:text-[#eb6923] active:scale-90 active:border-b-2 active:translate-y-[1px]"
         >
           <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
         </button>
