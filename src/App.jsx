@@ -113,7 +113,7 @@ function App() {
         <div className="text-center animate-bounce flex flex-col items-center justify-center px-6">
           {/* Real logo image inside splash screen */}
           <img 
-            src="/logo.png" 
+            src="/flogo.svg" 
             alt="e-Naksha Splash Logo" 
             className="w-48 h-auto object-contain dark:brightness-110 mb-4"
           />
