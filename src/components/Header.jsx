@@ -30,7 +30,7 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
         />
 
         {/* 🖋️ Custom Styled Pure Code Text Part */}
-        <div className="flex flex-col items-center justify-center select-none flex-shrink-0 -ml-2">
+        <div className="flex flex-col items-center justify-center select-none flex-shrink-0 -ml-3">
           {/* e-Naksha Text Part */}
           <div className="flex items-center font-sans font-black tracking-tight text-xl xs:text-2xl leading-none scale-y-105">
             <span className="text-[#f37032] font-extrabold lowercase pr-0.5">e</span>
