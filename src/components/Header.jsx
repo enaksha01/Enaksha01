@@ -25,7 +25,7 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
         <img 
           src="/logo.svg" 
           alt="e-Naksha Icon" 
-          className="h-10 xs:h-12 w-auto object-contain flex-shrink-0 dark:brightness-110"
+          className="h-16 xs:h-12 w-auto object-contain flex-shrink-0 dark:brightness-110"
         />
 
         {/* 🖋️ Custom Styled Pure Code Text Part */}
