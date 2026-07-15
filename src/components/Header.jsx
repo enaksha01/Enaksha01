@@ -23,7 +23,7 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
       <div className="flex items-end gap-0.5 active:scale-95 transition-transform duration-200 cursor-pointer mb-1">
         {/* House Icon Part */}
         <img 
-          src="/svg.png" 
+          src="/logo.svg" 
           alt="e-Naksha Icon" 
           className="h-10 w-auto object-contain dark:brightness-110"
         />
