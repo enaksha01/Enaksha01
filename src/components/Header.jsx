@@ -19,22 +19,45 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 shadow-sm px-4 py-2.5 flex items-center justify-between transition-all duration-300">
       
-            {/* 🏠 Ecore Theme Split Logo Section (Bottom-aligned & Closer) */}
-      <div className="flex items-end gap-0.5 active:scale-95 transition-transform duration-200 cursor-pointer mb-1 pl-0 ml-[-16px]">
+      {/* 🏠 Ecore Theme Split Logo Section (Complete Pure Code Text) */}
+      <div className="flex items-center gap-3 active:scale-95 transition-transform duration-200 cursor-pointer mb-1 pl-0 ml-[-16px]">
         {/* House Icon Part */}
         <img 
           src="/logo.svg" 
           alt="e-Naksha Icon" 
           className="h-18 w-auto object-contain dark:brightness-110"
         />
-        {/* Text Part (Bottom aligned & adjusted padding for perfect alignment) */}
-        <img 
-          src="/text.png" 
-          alt="e-Naksha Text" 
-          className="h-8 w-auto object-contain dark:brightness-110 pb-0.5"
-        />
-      </div>
 
+        {/* 🖋️ Custom Styled Pure Code Text Part (Up-Down Centered) */}
+        <div className="flex flex-col items-center justify-center select-none">
+          {/* e-Naksha Text Part */}
+          <div className="flex items-center font-sans font-black tracking-tight text-3xl leading-none scale-y-105">
+            <span className="text-[#f37032] font-extrabold lowercase pr-0.5">e</span>
+            <span className="text-[#555555] text-2xl font-bold px-1 relative bottom-[2px]">-</span>
+            <span className="text-[#4a7cbe] font-extrabold tracking-wide antialiased">Naksha</span>
+          </div>
+
+          {/* Sketch Your Dream + Pure CSS Arrows */}
+          <div className="flex items-center justify-center w-full gap-1.5 mt-1">
+            {/* Left Tapered Line */}
+            <div 
+              className="h-0 w-0 border-y-[2.5px] border-y-transparent border-r-[35px] border-r-[#555555]" 
+              style={{ borderRightStyle: 'solid' }}
+            />
+            
+            {/* Tagline Text */}
+            <span className="text-[10px] font-black tracking-wider text-[#444444] dark:text-slate-400 whitespace-nowrap font-serif italic antialiased">
+              Sketch Your Dream
+            </span>
+            
+            {/* Right Tapered Line */}
+            <div 
+              className="h-0 w-0 border-y-[2.5px] border-y-transparent border-l-[35px] border-l-[#555555]" 
+              style={{ borderLeftStyle: 'solid' }}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Right Side Controls */}
       <div className="flex items-center gap-3">
@@ -55,14 +78,6 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
           <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
         </button>
       </div>
-
-      {/* Mobile Dropdown Menu */}
-      {isMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 shadow-xl p-4 flex flex-col gap-2 transition-all duration-300">
-          <a href="#about" className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">About Us</a>
-          <a href="#contact" className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">Contact</a>
-        </div>
-      )}
     </header>
   );
 }
