@@ -20,7 +20,7 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 shadow-sm px-3 py-2 flex items-center justify-between transition-all duration-300">
       
       {/* 🏠 Ecore Theme Split Logo Section (Mobile Optimized) */}
-      <div className="flex items-center gap-1.5 active:scale-95 transition-transform duration-200 cursor-pointer min-w-0 flex-shrink">
+      <div className="flex items-center gap-0.5 active:scale-95 transition-transform duration-200 cursor-pointer min-w-0 flex-shrink">
         {/* House Icon Part */}
         <img 
           src="/logo.svg" 
