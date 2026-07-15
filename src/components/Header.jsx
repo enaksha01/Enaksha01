@@ -25,7 +25,7 @@ function Header({ isMenuOpen, setIsMenuOpen }) {
         <img 
           src="/logo.svg" 
           alt="e-Naksha Icon" 
-          className="h-18 w-auto object-contain dark:brightness-110"
+          className="h-12 w-auto object-contain dark:brightness-110"
         />
         {/* Text Part (Bottom aligned & adjusted padding for perfect alignment) */}
         <img 
