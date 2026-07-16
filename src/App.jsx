@@ -11,6 +11,8 @@ import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
 import Orders from './Orders'; 
+import Admin from './admin/AdminPanel'; // Naya location setup
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
