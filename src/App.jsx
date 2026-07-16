@@ -6,13 +6,12 @@ import { supabase } from './lib/supabase';
 import Header from './components/Header';
 import BottomNavigation from './components/BottomNavigation';
 
-// Baki puraane sub-forms (Inhe hum baad mein modular karenge, abhi chalne ke liye)
+// Baki puraane sub-forms
 import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
 import Orders from './Orders'; 
 import Admin from './admin/AdminPanel'; // Naya location setup
-
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -26,15 +25,46 @@ function App() {
   const [name, setName] = useState('');
   const [uploading, setUploading] = useState(false);
 
+  // 🧭 Ecore Smart URL Routing State
+  const [isAdminRoute, setIsAdminRoute] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
+
+    // 🔄 Continuous Smart URL Checker (Taaki user agar /admin par ho toh direct pakde)
+    const checkURLRoute = () => {
+      const currentURL = window.location.href.toLowerCase();
+      if (currentURL.includes('admin')) {
+        setIsAdminRoute(true);
+      } else {
+        setIsAdminRoute(false);
+      }
+    };
+
+    // Initial trigger
+    checkURLRoute();
+
+    // Standard Window Events
+    window.addEventListener('popstate', checkURLRoute);
+    window.addEventListener('hashchange', checkURLRoute);
+
+    // Mobile backup loops (safety switch)
+    const urlInterval = setInterval(checkURLRoute, 1000);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-    return () => { clearTimeout(timer); subscription.unsubscribe(); };
+
+    return () => { 
+      clearTimeout(timer); 
+      clearInterval(urlInterval);
+      subscription.unsubscribe(); 
+      window.removeEventListener('popstate', checkURLRoute);
+      window.removeEventListener('hashchange', checkURLRoute);
+    };
   }, []);
 
   const handleAuth = async (e) => {
@@ -66,8 +96,8 @@ function App() {
     if (!file) return alert("Please upload a file.");
 
     const options = {
-      key: "rzp_live_SpD9DCrPBHSi4S", // Teri Original Live Key
-      amount: 100, // ₹1
+      key: "rzp_live_SpD9DCrPBHSi4S", 
+      amount: 100, 
       currency: "INR",
       name: "e-Naksha",
       description: "Service Booking Fee",
@@ -109,11 +139,10 @@ function App() {
     rzp.open();
   };
 
-    if (showSplash) {
+  if (showSplash) {
     return (
       <div id="splash-screen" className="fixed inset-0 bg-white dark:bg-slate-950 flex flex-col items-center justify-center z-50 transition-colors duration-300">
         <div className="text-center animate-bounce flex flex-col items-center justify-center px-6">
-          {/* Real logo image inside splash screen */}
           <img 
             src="/flogo.svg" 
             alt="e-Naksha Splash Logo" 
@@ -124,14 +153,17 @@ function App() {
     );
   }
 
+  // 🛡️ STRICT GATE: URL checks out for Admin
+  if (isAdminRoute) {
+    return <Admin />;
+  }
 
+  // 🌐 PUBLIC WEBSITE APP MODE
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 transition-colors duration-300">
       
-      {/* 1. Naya Premium Header lagaya */}
       <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
-      {/* Main Content Area */}
       <main className="max-w-md mx-auto px-4 mt-6">
         
         {activeTab === 'home' && (
@@ -152,7 +184,6 @@ function App() {
           <div className="space-y-4">
             {!formType ? (
               <div className="grid grid-cols-2 gap-4">
-                {/* 2D Card - Clicking Border Effect */}
                 <div 
                   onClick={() => user ? setFormType('2d') : setActiveTab('profile')}
                   className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
@@ -160,7 +191,6 @@ function App() {
                   <i className="fa-solid fa-ruler-combined text-2xl text-[#eb6923] mb-3"></i>
                   <h3 className="font-bold text-sm">2D Layout Plan</h3>
                 </div>
-                {/* 3D Card - Clicking Border Effect */}
                 <div 
                   onClick={() => user ? setFormType('3d') : setActiveTab('profile')}
                   className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
@@ -213,11 +243,9 @@ function App() {
         )}
       </main>
 
-      {/* 2. Naya Premium Bottom Navigation lagaya */}
       <BottomNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
 
 export default App;
-                
