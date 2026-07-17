@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 
 // 🔌 Future Architecture: Jab tu ye files banayega, tab in lines ko uncomment (saaf) kar dena
-// import HomePortfolio from './homeportfolio';
+import HomePortfolio from './homeportfolio';
 // import ServiceAdmin from './service';
 // import OrderAdmin from './order';
 
@@ -156,14 +156,12 @@ function AdminPanel() {
         )}
 
         {/* 2. DYNAMIC MODULE LOADING ENGINES */}
-        {currentModule === 'portfolio' && (
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm text-center py-10">
-            {/* Future Placement: <HomePortfolio /> */}
-            <i className="fa-solid fa-images text-4xl text-[#eb6923]/20 mb-3"></i>
-            <h4 className="font-bold text-sm">Portfolio Sub-System Gateway</h4>
-            <p className="text-xs text-gray-400 mt-1">Ready for homeportfolio.jsx connection</p>
-          </div>
-        )}
+        {/* Dynamic CMS Loader */}
+{currentModule === 'portfolio' && (
+  <HomePortfolio />
+)}
+
+      
 
         {currentModule === 'service' && (
           <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm text-center py-10">
