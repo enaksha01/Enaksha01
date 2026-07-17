@@ -11,6 +11,8 @@ import Auth from './Auth';
 import LayoutForm from './LayoutForm';
 import ElevationForm from './ElevationForm';
 import Orders from './Orders'; 
+import Home from './components/Home'; // Naya premium home screen component
+
 import Admin from './admin/AdminPanel'; // Naya location setup
 
 function App() {
@@ -166,19 +168,10 @@ function App() {
 
       <main className="max-w-md mx-auto px-4 mt-6">
         
-        {activeTab === 'home' && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold border-b pb-2 border-gray-200 dark:border-slate-800">Portfolio</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl overflow-hidden shadow-md active:scale-95 transition-transform duration-200 border border-transparent dark:border-slate-800">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" alt="Work" className="w-full h-40 object-cover" />
-              </div>
-              <div className="rounded-2xl overflow-hidden shadow-md active:scale-95 transition-transform duration-200 border border-transparent dark:border-slate-800">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400" alt="Work" className="w-full h-40 object-cover" />
-              </div>
-            </div>
-          </div>
+                {activeTab === 'home' && (
+          <Home />
         )}
+
 
         {activeTab === 'service' && (
           <div className="space-y-4">
