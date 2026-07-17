@@ -24,7 +24,7 @@ function Home() {
       title: "Modern 3BHK Duplex House Plan",
       specs: "30x40 Sq.Ft • Vastu Compliant",
       image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
-      location: "Wankaner Project"
+      location: "Delhi"
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ function Home() {
       title: "Premium Corporate Office Space Layout",
       specs: "45x60 Sq.Ft • Multi-Floor Complex",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600",
-      location: "Start Plaza Office"
+      location: "Mumbai"
     },
     {
       id: 3,
