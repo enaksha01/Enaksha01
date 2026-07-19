@@ -1,11 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../lib/supabase';
+import Auth from '../lib/auth';
+
+// 🚀 MAGIC TOOL: Ye line 'src/pages' folder ki saari .jsx files ko automatic scan kar legi!
+const dynamicPages = import.meta.glob('../pages/*.jsx');
+
+
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [loading, setLoading] = useState(true);
+      const [user, setUser] = useState(null);
+
+  // 🔐 Active login authentication status checker hook
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
 
   useEffect(() => {
     fetchLiveHome();
@@ -58,6 +81,29 @@ function Home() {
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
   if (loading) return <div className="py-20 text-center text-xs font-bold text-gray-400">Loading Client Dashboard...</div>;
+    // 🧭 AUTOMATIC AUTO-PILOT ROUTER
+  const currentHash = window.location.hash;
+  
+  if (currentHash && currentHash !== '#/' && currentHash !== '#/home') {
+    const pageKey = currentHash.replace('#/', ''); 
+    const matchingFileKey = Object.keys(dynamicPages).find(key => key.includes(`/${pageKey}.jsx`));
+
+    if (matchingFileKey) {
+      // 🛑 Strict Security Check: Client authenticated or not?
+      if (!user) {
+        return <Auth />; // Login nahi hai toh seedha Login Screen phenko
+      }
+
+      const DynamicComponent = lazy(dynamicPages[matchingFileKey]);
+
+      return (
+        <Suspense fallback={<div className="py-20 text-center text-xs font-bold text-gray-400">Loading Layout Page...</div>}>
+          <DynamicComponent />
+        </Suspense>
+      );
+    }
+  }
+
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
