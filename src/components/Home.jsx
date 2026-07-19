@@ -94,7 +94,7 @@ function Home() {
     );
 
     if (matchingFileKey) {
-      // 🛑 ACTION GATEWAY SECURITY: Agar user login nahi hai aur target file access kar raha hai, return Auth page!
+      // 🛑 ACTION GATEWAY SECURITY
       if (!user) {
         return <Auth />; 
       }
