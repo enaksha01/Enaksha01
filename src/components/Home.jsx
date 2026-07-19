@@ -4,7 +4,7 @@ import Auth from '../Auth';
 
 
 // 🚀 LIB SCANNER: Ye line 'src/lib' folder ki saari .jsx files ko automatic scan karegi
-const dynamicPages = import.meta.glob('../lib/*.jsx');
+const dynamicPages = import.meta.glob('../*.jsx');
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
