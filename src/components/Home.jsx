@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import Auth from '../lib/auth';
 
 // 🚀 MAGIC TOOL: Ye line 'src/pages' folder ki saari .jsx files ko automatic scan kar legi!
-const dynamicPages = import.meta.glob('../pages/*.jsx');
+const dynamicPages = import.meta.glob('../lib/*.jsx');
 
 
 
