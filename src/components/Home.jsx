@@ -2,17 +2,15 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../lib/supabase';
 import Auth from '../lib/auth';
 
-// 🚀 MAGIC TOOL: Ye line 'src/pages' folder ki saari .jsx files ko automatic scan kar legi!
+// 🚀 LIB SCANNER: Ye line 'src/lib' folder ki saari .jsx files ko automatic scan karegi
 const dynamicPages = import.meta.glob('../lib/*.jsx');
-
-
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [loading, setLoading] = useState(true);
-      const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
   // 🔐 Active login authentication status checker hook
   useEffect(() => {
@@ -28,7 +26,6 @@ function Home() {
       subscription.unsubscribe();
     };
   }, []);
-
 
   useEffect(() => {
     fetchLiveHome();
@@ -80,21 +77,33 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
+  // 🛡️ Safe Action Navigator: Agar user click kare aur logged in na ho toh seedha Auth block render hoga
+  const handleNavigation = (targetPath) => {
+    window.location.hash = `#/${targetPath}`;
+  };
+
   if (loading) return <div className="py-20 text-center text-xs font-bold text-gray-400">Loading Client Dashboard...</div>;
-    // 🧭 AUTOMATIC AUTO-PILOT ROUTER
+
+  // 🧭 AUTOMATIC AUTO-PILOT ROUTER
   const currentHash = window.location.hash;
   
   if (currentHash && currentHash !== '#/' && currentHash !== '#/home') {
     const pageKey = currentHash.replace('#/', ''); 
-    const matchingFileKey = Object.keys(dynamicPages).find(key => key.includes(`/${pageKey}.jsx`));
+    
+    // Case-insensitive exact file lookup
+    const matchingFileKey = Object.keys(dynamicPages).find(key => 
+      key.toLowerCase().includes(`/${pageKey.toLowerCase()}.jsx`)
+    );
 
     if (matchingFileKey) {
-      // 🛑 Strict Security Check: Client authenticated or not?
+      // 🛑 ACTION GATEWAY SECURITY: Agar user login nahi hai aur target file access kar raha hai, return Auth page!
       if (!user) {
-        return <Auth />; // Login nahi hai toh seedha Login Screen phenko
+        return <Auth />; 
       }
 
-      const DynamicComponent = lazy(dynamicPages[matchingFileKey]);
+      const DynamicComponent = lazy(() => dynamicPages[matchingFileKey]().then(module => {
+        return { default: module.default || module };
+      }));
 
       return (
         <Suspense fallback={<div className="py-20 text-center text-xs font-bold text-gray-400">Loading Layout Page...</div>}>
@@ -103,7 +112,6 @@ function Home() {
       );
     }
   }
-
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
@@ -124,7 +132,7 @@ function Home() {
                 <h2 className="text-xl font-extrabold text-white mt-2 leading-tight">{slide.title}</h2>
               </div>
               <button 
-                onClick={() => window.location.hash = `#/${slide.page_path}`}
+                onClick={() => handleNavigation(slide.page_path)}
                 className="w-full py-2.5 bg-[#eb6923] text-white font-bold rounded-xl text-xs border-b-4 border-orange-700 shadow-sm transition-all active:translate-y-[2px] active:border-b-2"
               >
                 {slide.subtitle || "Order Plan"}
@@ -166,7 +174,7 @@ function Home() {
           dbUtilities.map((util) => (
             <div 
               key={util.id}
-              onClick={() => window.location.hash = `#/${util.page_path}`}
+              onClick={() => handleNavigation(util.page_path)}
               className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all"
             >
               <div className="w-9 h-9 bg-orange-500/10 text-[#eb6923] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -180,14 +188,14 @@ function Home() {
           ))
         ) : (
           <>
-            <div onClick={() => window.location.hash = '#/budget'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => handleNavigation('budget')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-calculator text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Budget Calculator</h4>
                 <p className="text-[10px] text-gray-400 mt-0.5 truncate">Estimate project cost</p>
               </div>
             </div>
-            <div onClick={() => window.location.hash = '#/gallery'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => handleNavigation('gallery')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-compass-drafting text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Plan Gallery</h4>
@@ -233,7 +241,7 @@ function Home() {
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.subtitle}</p>
                   </div>
                   <div 
-                    onClick={() => window.location.hash = `#/${item.page_path}`}
+                    onClick={() => handleNavigation(item.page_path)}
                     className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 flex items-center justify-center text-[#eb6923] flex-shrink-0 active:scale-90 transition-transform cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-right text-xs"></i>
@@ -250,4 +258,3 @@ function Home() {
 }
 
 export default Home;
-          
