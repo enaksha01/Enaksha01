@@ -77,18 +77,10 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  // 🛡️ Safe Action Navigator: Agar user click kare aur logged in na ho toh seedha Auth block render hoga
+  // 🛡️ Safe Action Navigator: Hash badlega aur dynamic routing handle karega
   const handleNavigation = (targetPath) => {
     window.location.hash = `#/${targetPath}`;
   };
-
-    return (
-    <div className="space-y-6 pb-20 animate-fadeIn">
-      {/* 🔄 Background Silent Loader (UI block nahi karega) */}
-      {loading && <div className="text-center text-[10px] text-gray-300">Syncing updates...</div>}
-      
-      {/* 🏙️ HERO SECTION ... baaki code waisa hi rahega ... */}
-
 
   // 🧭 AUTOMATIC AUTO-PILOT ROUTER
   const currentHash = window.location.hash;
@@ -121,6 +113,8 @@ function Home() {
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
+      {/* 🔄 Background Silent Loader (UI block nahi karega) */}
+      {loading && <div className="text-center text-[10px] text-gray-300">Syncing updates...</div>}
       
       {/* 🏙️ HERO SECTION */}
       <div className="relative w-full h-56 rounded-2xl overflow-hidden shadow-md bg-slate-900 group">
