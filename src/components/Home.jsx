@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../lib/supabase';
-import Auth from '../lib/auth';
+import Auth from '../Auth';
+
 
 // 🚀 LIB SCANNER: Ye line 'src/lib' folder ki saari .jsx files ko automatic scan karegi
 const dynamicPages = import.meta.glob('../lib/*.jsx');
