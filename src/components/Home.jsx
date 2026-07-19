@@ -82,7 +82,13 @@ function Home() {
     window.location.hash = `#/${targetPath}`;
   };
 
-  if (loading) return <div className="py-20 text-center text-xs font-bold text-gray-400">Loading Client Dashboard...</div>;
+    return (
+    <div className="space-y-6 pb-20 animate-fadeIn">
+      {/* 🔄 Background Silent Loader (UI block nahi karega) */}
+      {loading && <div className="text-center text-[10px] text-gray-300">Syncing updates...</div>}
+      
+      {/* 🏙️ HERO SECTION ... baaki code waisa hi rahega ... */}
+
 
   // 🧭 AUTOMATIC AUTO-PILOT ROUTER
   const currentHash = window.location.hash;
