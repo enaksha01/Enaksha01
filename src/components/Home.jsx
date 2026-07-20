@@ -2,9 +2,9 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../lib/supabase';
 import Auth from '../Auth';
 
-
-// 🚀 LIB SCANNER: Ye line 'src/lib' folder ki saari .jsx files ko automatic scan karegi
-const dynamicPages = import.meta.glob('../*.jsx');
+// 🚀 CLEAN & SAFE LAZY IMPORTS (Bina kisi glob scan ke, zero build error risk)
+const LayoutForm = lazy(() => import('../LayoutForm'));
+const ElevationForm = lazy(() => import('../ElevationForm'));
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
@@ -13,7 +13,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // 🔐 Active login authentication status checker hook
+  // 🔐 Auth status tracker
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -43,16 +43,14 @@ function Home() {
     }
   };
 
-  // 🔌 Extract layers from live database array
   const dbHero = cmsData.filter(i => i.section_type === 'hero');
   const dbTags = cmsData.filter(i => i.section_type === 'tag');
   const dbUtilities = cmsData.filter(i => i.section_type === 'utility');
   const dbLower = cmsData.filter(i => i.section_type === 'lower_block');
 
-  // 🎭 Static Fallbacks (If DB has no elements)
   const defaultHero = [
-    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "service", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
-    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "service", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
+    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "layoutform", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
+    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "elevationform", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
   ];
 
   const defaultLower = [
@@ -65,7 +63,6 @@ function Home() {
   const categories = ["All", ...(dbTags.length > 0 ? dbTags.map(t => t.title) : ["Residential Building", "Commercial", "Educational Building", "Interior Projects"])];
   const portfolioItems = dbLower.length > 0 ? dbLower : defaultLower;
 
-  // Slider timing loop
   useEffect(() => {
     if (heroSlides.length <= 1) return;
     const slideTimer = setInterval(() => {
@@ -78,35 +75,30 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  // 🛡️ Safe Action Navigator: Hash badlega aur dynamic routing handle karega
   const handleNavigation = (targetPath) => {
     window.location.hash = `#/${targetPath}`;
   };
 
-  // 🧭 AUTOMATIC AUTO-PILOT ROUTER
-  const currentHash = window.location.hash;
-  
+  // 🧭 CLEAN DYNAMIC ROUTER SWITCH
+  const currentHash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
+
   if (currentHash && currentHash !== '#/' && currentHash !== '#/home') {
-    const pageKey = currentHash.replace('#/', ''); 
-    
-    // Case-insensitive exact file lookup
-    const matchingFileKey = Object.keys(dynamicPages).find(key => 
-      key.toLowerCase().includes(`/${pageKey.toLowerCase()}.jsx`)
-    );
+    if (!user) {
+      return <Auth />;
+    }
 
-    if (matchingFileKey) {
-      // 🛑 ACTION GATEWAY SECURITY
-      if (!user) {
-        return <Auth />; 
-      }
+    let TargetComponent = null;
 
-      const DynamicComponent = lazy(() => dynamicPages[matchingFileKey]().then(module => {
-        return { default: module.default || module };
-      }));
+    if (currentHash.includes('layoutform') || currentHash.includes('layout-form')) {
+      TargetComponent = LayoutForm;
+    } else if (currentHash.includes('elevationform') || currentHash.includes('elevation-form')) {
+      TargetComponent = ElevationForm;
+    }
 
+    if (TargetComponent) {
       return (
-        <Suspense fallback={<div className="py-20 text-center text-xs font-bold text-gray-400">Loading Layout Page...</div>}>
-          <DynamicComponent />
+        <Suspense fallback={<div className="py-20 text-center text-xs font-bold text-gray-400">Loading Page...</div>}>
+          <TargetComponent />
         </Suspense>
       );
     }
@@ -114,7 +106,6 @@ function Home() {
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
-      {/* 🔄 Background Silent Loader (UI block nahi karega) */}
       {loading && <div className="text-center text-[10px] text-gray-300">Syncing updates...</div>}
       
       {/* 🏙️ HERO SECTION */}
@@ -169,7 +160,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 🎛️ UTILITY ZONE: INTERACTION BUTTON ROWS */}
+      {/* 🎛️ UTILITY ZONE */}
       <div className="grid grid-cols-2 gap-4">
         {dbUtilities.length > 0 ? (
           dbUtilities.map((util) => (
