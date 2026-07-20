@@ -2,7 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '../lib/supabase';
 import Auth from '../Auth';
 
-// 🚀 CLEAN & SAFE LAZY IMPORTS (Bina kisi glob scan ke, zero build error risk)
+// 🚀 CLEAN & SAFE LAZY IMPORTS (Zero build error risk)
 const LayoutForm = lazy(() => import('../LayoutForm'));
 const ElevationForm = lazy(() => import('../ElevationForm'));
 
