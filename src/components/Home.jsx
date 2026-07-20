@@ -1,32 +1,11 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import Auth from '../Auth';
-
-// 🚀 CLEAN & SAFE LAZY IMPORTS (Zero build error risk)
-const LayoutForm = lazy(() => import('../LayoutForm'));
-const ElevationForm = lazy(() => import('../ElevationForm'));
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
-  // 🔐 Auth status tracker
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     fetchLiveHome();
@@ -43,14 +22,16 @@ function Home() {
     }
   };
 
+  // 🔌 Extract layers from live database array
   const dbHero = cmsData.filter(i => i.section_type === 'hero');
   const dbTags = cmsData.filter(i => i.section_type === 'tag');
   const dbUtilities = cmsData.filter(i => i.section_type === 'utility');
   const dbLower = cmsData.filter(i => i.section_type === 'lower_block');
 
+  // 🎭 Static Fallbacks (If DB has no elements)
   const defaultHero = [
-    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "layoutform", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
-    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "elevationform", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
+    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "service", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
+    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "service", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
   ];
 
   const defaultLower = [
@@ -63,6 +44,7 @@ function Home() {
   const categories = ["All", ...(dbTags.length > 0 ? dbTags.map(t => t.title) : ["Residential Building", "Commercial", "Educational Building", "Interior Projects"])];
   const portfolioItems = dbLower.length > 0 ? dbLower : defaultLower;
 
+  // Slider timing loop
   useEffect(() => {
     if (heroSlides.length <= 1) return;
     const slideTimer = setInterval(() => {
@@ -75,38 +57,10 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  const handleNavigation = (targetPath) => {
-    window.location.hash = `#/${targetPath}`;
-  };
-
-  // 🧭 CLEAN DYNAMIC ROUTER SWITCH
-  const currentHash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
-
-  if (currentHash && currentHash !== '#/' && currentHash !== '#/home') {
-    if (!user) {
-      return <Auth />;
-    }
-
-    let TargetComponent = null;
-
-    if (currentHash.includes('layoutform') || currentHash.includes('layout-form')) {
-      TargetComponent = LayoutForm;
-    } else if (currentHash.includes('elevationform') || currentHash.includes('elevation-form')) {
-      TargetComponent = ElevationForm;
-    }
-
-    if (TargetComponent) {
-      return (
-        <Suspense fallback={<div className="py-20 text-center text-xs font-bold text-gray-400">Loading Page...</div>}>
-          <TargetComponent />
-        </Suspense>
-      );
-    }
-  }
+  if (loading) return <div className="py-20 text-center text-xs font-bold text-gray-400">Loading Client Dashboard...</div>;
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
-      {loading && <div className="text-center text-[10px] text-gray-300">Syncing updates...</div>}
       
       {/* 🏙️ HERO SECTION */}
       <div className="relative w-full h-56 rounded-2xl overflow-hidden shadow-md bg-slate-900 group">
@@ -124,7 +78,7 @@ function Home() {
                 <h2 className="text-xl font-extrabold text-white mt-2 leading-tight">{slide.title}</h2>
               </div>
               <button 
-                onClick={() => handleNavigation(slide.page_path)}
+                onClick={() => window.location.hash = `#/${slide.page_path}`}
                 className="w-full py-2.5 bg-[#eb6923] text-white font-bold rounded-xl text-xs border-b-4 border-orange-700 shadow-sm transition-all active:translate-y-[2px] active:border-b-2"
               >
                 {slide.subtitle || "Order Plan"}
@@ -160,13 +114,13 @@ function Home() {
         </div>
       </div>
 
-      {/* 🎛️ UTILITY ZONE */}
+      {/* 🎛️ UTILITY ZONE: INTERACTION BUTTON ROWS */}
       <div className="grid grid-cols-2 gap-4">
         {dbUtilities.length > 0 ? (
           dbUtilities.map((util) => (
             <div 
               key={util.id}
-              onClick={() => handleNavigation(util.page_path)}
+              onClick={() => window.location.hash = `#/${util.page_path}`}
               className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all"
             >
               <div className="w-9 h-9 bg-orange-500/10 text-[#eb6923] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -180,14 +134,14 @@ function Home() {
           ))
         ) : (
           <>
-            <div onClick={() => handleNavigation('budget')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => window.location.hash = '#/budget'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-calculator text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Budget Calculator</h4>
                 <p className="text-[10px] text-gray-400 mt-0.5 truncate">Estimate project cost</p>
               </div>
             </div>
-            <div onClick={() => handleNavigation('gallery')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => window.location.hash = '#/gallery'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-compass-drafting text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Plan Gallery</h4>
@@ -233,7 +187,7 @@ function Home() {
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.subtitle}</p>
                   </div>
                   <div 
-                    onClick={() => handleNavigation(item.page_path)}
+                    onClick={() => window.location.hash = `#/${item.page_path}`}
                     className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 flex items-center justify-center text-[#eb6923] flex-shrink-0 active:scale-90 transition-transform cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-right text-xs"></i>
@@ -250,3 +204,4 @@ function Home() {
 }
 
 export default Home;
+          
