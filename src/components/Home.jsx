@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import Auth from '../Auth';
+import Auth from '../Auth'; // src/Auth.jsx se import kiya gaya hai
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
 
+  // 🔐 User login session listener
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -31,6 +33,8 @@ function Home() {
       setCmsData(data || []);
     } catch (err) {
       console.error("Error fetching homepage elements:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +70,7 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
+  // Button click par hi Auth gate check hoga
   const handleAction = (path) => {
     if (!user) {
       setShowAuth(true);
@@ -74,14 +79,15 @@ function Home() {
     }
   };
 
+  // Agar user logged in nahi hai aur kisi button par click kiya, tab hi src/Auth.jsx render hoga
   if (showAuth && !user) {
     return (
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm mt-4">
+      <div className="space-y-4">
         <button 
           onClick={() => setShowAuth(false)}
-          className="mb-4 text-xs font-bold text-gray-500 flex items-center gap-1 active:scale-95"
+          className="text-xs font-bold text-gray-500 flex items-center gap-1 active:scale-95 px-3 py-1.5 bg-gray-100 rounded-lg"
         >
-          <i className="fa-solid fa-arrow-left"></i> Back to Home
+          ← Back to Home
         </button>
         <Auth />
       </div>
