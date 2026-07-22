@@ -218,7 +218,7 @@ function App() {
                   handleForgotPassword={handleForgotPassword}
                   onBack={() =>
 
-setActiveTab (previous Tab ||
+setActiveTab (previousTab ||
 
 'home')} // YE LINE ADD KARO />
                 />
