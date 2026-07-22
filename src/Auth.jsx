@@ -8,7 +8,8 @@ const Auth = ({
   setPassword, 
   setUsername, 
   setName, 
-  handleForgotPassword 
+  handleForgotPassword,
+  onBack
 }) => {
   return (
     <div className="auth-wrapper">
