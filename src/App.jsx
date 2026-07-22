@@ -213,15 +213,16 @@ function App() {
             {!user ? (
               <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
                 <Auth 
-                  authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
-                  setEmail={setEmail} setPassword={setPassword} setName={setName} 
-                  handleForgotPassword={handleForgotPassword}
-                  onBack={() =>
+  authMode={authMode} 
+  setAuthMode={setAuthMode} 
+  handleAuth={handleAuth} 
+  setEmail={setEmail} 
+  setPassword={setPassword} 
+  setName={setName} 
+  handleForgotPassword={handleForgotPassword}
+  onBack={() => setActiveTab(previousTab || 'home')}
+/>
 
-setActiveTab (previousTab ||
-
-'home')} // YE LINE ADD KARO />
-                />
               </div>
             ) : (
               <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center text-center">
