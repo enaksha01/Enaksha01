@@ -8,31 +8,12 @@ const Auth = ({
   setPassword, 
   setUsername, 
   setName, 
-  handleForgotPassword,
-  onBack
+  handleForgotPassword
 }) => {
   return (
     <div className="auth-wrapper">
       <div className="auth-container">
-        <button 
-  type="button" 
-  onClick={() => { window.location.hash = '#/'; }}
-  style={{
-    background: 'transparent',
-    border: 'none',
-    color: '#666',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    marginBottom: '15px'
-  }}
->
-  <i className="fa-solid fa-arrow-left"></i> Back
-</button>
-
+        
 
         {/* Logo/Brand Header */}
         <div className="auth-brand">
