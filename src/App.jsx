@@ -18,6 +18,7 @@ import Admin from './admin/AdminPanel'; // Naya location setup
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
+  const [previousTab, setPreviousTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formType, setFormType] = useState(null);
   const [user, setUser] = useState(null);
@@ -215,6 +216,11 @@ function App() {
                   authMode={authMode} setAuthMode={setAuthMode} handleAuth={handleAuth} 
                   setEmail={setEmail} setPassword={setPassword} setName={setName} 
                   handleForgotPassword={handleForgotPassword}
+                  onBack={() =>
+
+setActiveTab (previous Tab ||
+
+'home')} // YE LINE ADD KARO />
                 />
               </div>
             ) : (
