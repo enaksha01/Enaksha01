@@ -13,6 +13,25 @@ const Auth = ({
   return (
     <div className="auth-wrapper">
       <div className="auth-container">
+        <button 
+  type="button" 
+  onClick={() => window.history.back()}
+  style={{
+    background: 'transparent',
+    border: 'none',
+    color: '#666',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '15px'
+  }}
+>
+  <i className="fa-solid fa-arrow-left"></i> Back
+</button>
+
         {/* Logo/Brand Header */}
         <div className="auth-brand">
           <span className="brand-e">e</span>-Naksha
