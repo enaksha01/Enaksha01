@@ -8,11 +8,19 @@ const Auth = ({
   setPassword, 
   setUsername, 
   setName, 
-  handleForgotPassword
+  handleForgotPassword,
+  onBack
 }) => {
   return (
     <div className="auth-wrapper">
       <div className="auth-container">
+        <button 
+  type="button" 
+  onClick={onBack}
+  className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-slate-800 transition-all mb-4 cursor-pointer active:scale-95"
+>
+  <i className="fa-solid fa-arrow-left text-sm"></i> Back
+</button>
         
 
         {/* Logo/Brand Header */}
