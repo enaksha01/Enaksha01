@@ -16,7 +16,7 @@ const Auth = ({
       <div className="auth-container">
         <button 
   type="button" 
-  onClick={() => window.history.back()}
+  onClick={() => { window.location.hash = '#/'; }}
   style={{
     background: 'transparent',
     border: 'none',
@@ -32,6 +32,7 @@ const Auth = ({
 >
   <i className="fa-solid fa-arrow-left"></i> Back
 </button>
+
 
         {/* Logo/Brand Header */}
         <div className="auth-brand">
