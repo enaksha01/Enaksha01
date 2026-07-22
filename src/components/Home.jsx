@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import Auth from '../Auth';
 
 function Home() {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     fetchLiveHome();
@@ -17,18 +31,14 @@ function Home() {
       setCmsData(data || []);
     } catch (err) {
       console.error("Error fetching homepage elements:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  // 🔌 Extract layers from live database array
   const dbHero = cmsData.filter(i => i.section_type === 'hero');
   const dbTags = cmsData.filter(i => i.section_type === 'tag');
   const dbUtilities = cmsData.filter(i => i.section_type === 'utility');
   const dbLower = cmsData.filter(i => i.section_type === 'lower_block');
 
-  // 🎭 Static Fallbacks (If DB has no elements)
   const defaultHero = [
     { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "service", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
     { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "service", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
@@ -44,7 +54,6 @@ function Home() {
   const categories = ["All", ...(dbTags.length > 0 ? dbTags.map(t => t.title) : ["Residential Building", "Commercial", "Educational Building", "Interior Projects"])];
   const portfolioItems = dbLower.length > 0 ? dbLower : defaultLower;
 
-  // Slider timing loop
   useEffect(() => {
     if (heroSlides.length <= 1) return;
     const slideTimer = setInterval(() => {
@@ -57,7 +66,27 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  if (loading) return <div className="py-20 text-center text-xs font-bold text-gray-400">Loading Client Dashboard...</div>;
+  const handleAction = (path) => {
+    if (!user) {
+      setShowAuth(true);
+    } else {
+      window.location.hash = `#/${path}`;
+    }
+  };
+
+  if (showAuth && !user) {
+    return (
+      <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm mt-4">
+        <button 
+          onClick={() => setShowAuth(false)}
+          className="mb-4 text-xs font-bold text-gray-500 flex items-center gap-1 active:scale-95"
+        >
+          <i className="fa-solid fa-arrow-left"></i> Back to Home
+        </button>
+        <Auth />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
@@ -78,7 +107,7 @@ function Home() {
                 <h2 className="text-xl font-extrabold text-white mt-2 leading-tight">{slide.title}</h2>
               </div>
               <button 
-                onClick={() => window.location.hash = `#/${slide.page_path}`}
+                onClick={() => handleAction(slide.page_path)}
                 className="w-full py-2.5 bg-[#eb6923] text-white font-bold rounded-xl text-xs border-b-4 border-orange-700 shadow-sm transition-all active:translate-y-[2px] active:border-b-2"
               >
                 {slide.subtitle || "Order Plan"}
@@ -120,7 +149,7 @@ function Home() {
           dbUtilities.map((util) => (
             <div 
               key={util.id}
-              onClick={() => window.location.hash = `#/${util.page_path}`}
+              onClick={() => handleAction(util.page_path)}
               className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all"
             >
               <div className="w-9 h-9 bg-orange-500/10 text-[#eb6923] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -134,14 +163,14 @@ function Home() {
           ))
         ) : (
           <>
-            <div onClick={() => window.location.hash = '#/budget'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => handleAction('budget')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-calculator text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Budget Calculator</h4>
                 <p className="text-[10px] text-gray-400 mt-0.5 truncate">Estimate project cost</p>
               </div>
             </div>
-            <div onClick={() => window.location.hash = '#/gallery'} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+            <div onClick={() => handleAction('gallery')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
               <div className="w-9 h-9 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-compass-drafting text-base"></i></div>
               <div className="text-left overflow-hidden">
                 <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Plan Gallery</h4>
@@ -187,7 +216,7 @@ function Home() {
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.subtitle}</p>
                   </div>
                   <div 
-                    onClick={() => window.location.hash = `#/${item.page_path}`}
+                    onClick={() => handleAction(item.page_path)}
                     className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 flex items-center justify-center text-[#eb6923] flex-shrink-0 active:scale-90 transition-transform cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-right text-xs"></i>
@@ -204,4 +233,3 @@ function Home() {
 }
 
 export default Home;
-          
