@@ -175,8 +175,13 @@ function App() {
       <main className="max-w-md mx-auto px-4 mt-6">
         
                 {activeTab === 'home' && (
-          <Home />
-        )}
+  <Home 
+    user={user} 
+    changeTab={changeTab} 
+    setFormType={setFormType} 
+  />
+)}
+
 
 
         {activeTab === 'service' && (
