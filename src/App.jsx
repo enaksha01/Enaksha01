@@ -33,7 +33,7 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
-
+    
     // 🔄 Continuous Smart URL Checker (Taaki user agar /admin par ho toh direct pakde)
     const checkURLRoute = () => {
       const currentURL = window.location.href.toLowerCase();
@@ -69,7 +69,12 @@ function App() {
       window.removeEventListener('hashchange', checkURLRoute);
     };
   }, []);
-
+// Tab badalte waqt pichhla tab yaad rakhne ke liye function
+  const changeTab = (newTab) => {
+    setPreviousTab(activeTab);
+    setActiveTab(newTab);
+  };
+  
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
@@ -179,14 +184,14 @@ function App() {
             {!formType ? (
               <div className="grid grid-cols-2 gap-4">
                 <div 
-                  onClick={() => user ? setFormType('2d') : setActiveTab('profile')}
+                  onClick={() => user ? setFormType('2d') : changeTab('profile')}
                   className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
                 >
                   <i className="fa-solid fa-ruler-combined text-2xl text-[#eb6923] mb-3"></i>
                   <h3 className="font-bold text-sm">2D Layout Plan</h3>
                 </div>
                 <div 
-                  onClick={() => user ? setFormType('3d') : setActiveTab('profile')}
+                  onClick={() => user ? setFormType('3d') : changeTab('profile')}
                   className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
                 >
                   <i className="fa-solid fa-cube text-2xl text-[#eb6923] mb-3"></i>
@@ -243,7 +248,7 @@ function App() {
         )}
       </main>
 
-      <BottomNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <BottomNavigation activeTab={activeTab} setActiveTab={changeTab} />
     </div>
   );
 }
