@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import Auth from '../Auth'; // src/Auth.jsx se import kiya gaya hai
 
-function Home() {
+function Home({ user, changeTab, setFormType }) {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [showAuth, setShowAuth] = useState(false);
-
-  // 🔐 User login session listener
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     fetchLiveHome();
@@ -44,14 +28,14 @@ function Home() {
   const dbLower = cmsData.filter(i => i.section_type === 'lower_block');
 
   const defaultHero = [
-    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", page_path: "service", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
-    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", page_path: "service", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
+    { id: 'dh1', title: "Professional 2D Layout Planning", subtitle: "MAKE YOUR PLAN @ ONLY ₹999", type: "2d", image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600" },
+    { id: 'dh2', title: "Vray & Lumion Style Lighting Look", subtitle: "MAKE YOUR ELEVATION @ ONLY ₹1999", type: "3d", image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600" }
   ];
 
   const defaultLower = [
-    { id: 'dl1', category_tag: "Residential Building", title: "Modern 3BHK Duplex House Plan", subtitle: "30x40 Sq.Ft • Vastu Compliant", location: "Delhi", image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600", page_path: "portfolio-1" },
-    { id: 'dl2', category_tag: "Commercial", title: "Premium Corporate Office Space Layout", subtitle: "45x60 Sq.Ft • Multi-Floor Complex", location: "Mumbai", image_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600", page_path: "portfolio-2" },
-    { id: 'dl3', category_tag: "Educational Building", title: "Contemporary School Building Design", subtitle: "80x120 Sq.Ft • Open Courtyard Style", location: "Gujarat Region", image_url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600", page_path: "portfolio-3" }
+    { id: 'dl1', category_tag: "Residential Building", title: "Modern 3BHK Duplex House Plan", subtitle: "30x40 Sq.Ft • Vastu Compliant", location: "Delhi", image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600", type: "2d" },
+    { id: 'dl2', category_tag: "Commercial", title: "Premium Corporate Office Space Layout", subtitle: "45x60 Sq.Ft • Multi-Floor Complex", location: "Mumbai", image_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600", type: "2d" },
+    { id: 'dl3', category_tag: "Educational Building", title: "Contemporary School Building Design", subtitle: "80x120 Sq.Ft • Open Courtyard Style", location: "Gujarat Region", image_url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600", type: "3d" }
   ];
 
   const heroSlides = dbHero.length > 0 ? dbHero : defaultHero;
@@ -70,29 +54,17 @@ function Home() {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  // Button click par hi Auth gate check hoga
-  const handleAction = (path) => {
-    if (!user) {
-      setShowAuth(true);
+  // 🎯 Centralized Click Handler Sabhi Buttons Ke Liye
+  const handleAction = (formTypeTarget = '2d') => {
+    if (user) {
+      // User logged in hai toh target form type set karo
+      if (typeof setFormType === 'function') setFormType(formTypeTarget);
     } else {
-      window.location.hash = `#/${path}`;
+      // User logged in nahi hai toh seedha profile/auth page par bhej do
+      // previousTab mein automatically 'home' save ho jayega
+      if (typeof changeTab === 'function') changeTab('profile');
     }
   };
-
-  // Agar user logged in nahi hai aur kisi button par click kiya, tab hi src/Auth.jsx render hoga
-  if (showAuth && !user) {
-    return (
-      <div className="space-y-4">
-        <button 
-          onClick={() => setShowAuth(false)}
-          className="text-xs font-bold text-gray-500 flex items-center gap-1 active:scale-95 px-3 py-1.5 bg-gray-100 rounded-lg"
-        >
-          ← Back to Home
-        </button>
-        <Auth />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6 pb-20 animate-fadeIn">
@@ -113,7 +85,7 @@ function Home() {
                 <h2 className="text-xl font-extrabold text-white mt-2 leading-tight">{slide.title}</h2>
               </div>
               <button 
-                onClick={() => handleAction(slide.page_path)}
+                onClick={() => handleAction(slide.type || '2d')}
                 className="w-full py-2.5 bg-[#eb6923] text-white font-bold rounded-xl text-xs border-b-4 border-orange-700 shadow-sm transition-all active:translate-y-[2px] active:border-b-2"
               >
                 {slide.subtitle || "Order Plan"}
@@ -155,7 +127,7 @@ function Home() {
           dbUtilities.map((util) => (
             <div 
               key={util.id}
-              onClick={() => handleAction(util.page_path)}
+              onClick={() => handleAction(util.type || '2d')}
               className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all"
             >
               <div className="w-9 h-9 bg-orange-500/10 text-[#eb6923] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -169,18 +141,18 @@ function Home() {
           ))
         ) : (
           <>
-            <div onClick={() => handleAction('budget')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
-              <div className="w-9 h-9 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-calculator text-base"></i></div>
+            <div onClick={() => handleAction('2d')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+              <div className="w-9 h-9 bg-emerald-500/10 text-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-ruler-combined text-base"></i></div>
               <div className="text-left overflow-hidden">
-                <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Budget Calculator</h4>
-                <p className="text-[10px] text-gray-400 mt-0.5 truncate">Estimate project cost</p>
+                <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">2D Layout Plan</h4>
+                <p className="text-[10px] text-gray-400 mt-0.5 truncate">Create floor plan</p>
               </div>
             </div>
-            <div onClick={() => handleAction('gallery')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
-              <div className="w-9 h-9 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-compass-drafting text-base"></i></div>
+            <div onClick={() => handleAction('3d')} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all">
+              <div className="w-9 h-9 bg-indigo-500/10 text-indigo-500 rounded-xl flex items-center justify-center flex-shrink-0"><i className="fa-solid fa-cube text-base"></i></div>
               <div className="text-left overflow-hidden">
-                <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">Plan Gallery</h4>
-                <p className="text-[10px] text-gray-400 mt-0.5 truncate">Explore house catalog</p>
+                <h4 className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">3D Elevation</h4>
+                <p className="text-[10px] text-gray-400 mt-0.5 truncate">3D Front view</p>
               </div>
             </div>
           </>
@@ -222,7 +194,7 @@ function Home() {
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.subtitle}</p>
                   </div>
                   <div 
-                    onClick={() => handleAction(item.page_path)}
+                    onClick={() => handleAction(item.type || '2d')}
                     className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 flex items-center justify-center text-[#eb6923] flex-shrink-0 active:scale-90 transition-transform cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-right text-xs"></i>
