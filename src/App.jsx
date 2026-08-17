@@ -222,7 +222,8 @@ const openTargetPage = (pagePath) => {
 
 {targetPage ? (
   React.createElement(targetPage, {
-    onBack: () => setTargetPage(null)
+    onBack: () => setTargetPage(null),
+    setFormType: () => setTargetPage(null)
   })
 ) : (
     <>
