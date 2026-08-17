@@ -14,7 +14,9 @@ import Orders from './Orders';
 import Home from './components/Home'; // Naya premium home screen component
 
 import Admin from './admin/AdminPanel'; // Naya location setup
-
+// Hero Showcase ke Target Route Page ke liye
+// src ke andar kisi bhi folder ki JSX file ko dynamically load karega
+const targetPageModules = import.meta.glob('./**/*.jsx', { eager: true });
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
@@ -30,7 +32,9 @@ function App() {
 
   // 🧭 Ecore Smart URL Routing State
   const [isAdminRoute, setIsAdminRoute] = useState(false);
-
+// Currently opened Target Route Page
+const [targetPage, setTargetPage] = useState(null);
+  
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 4200);
     
@@ -74,6 +78,48 @@ function App() {
     setPreviousTab(activeTab);
     setActiveTab(newTab);
   };
+  // Hero Showcase ke Target Route Page ko actual React component ke roop me open karega
+// URL ko bilkul change nahi karega
+const openTargetPage = (pagePath) => {
+  // Blank Target Route Page = kuch bhi nahi hoga
+  if (!pagePath || !pagePath.trim()) {
+    return;
+  }
+
+  let cleanPath = pagePath.trim().replace(/\\/g, '/');
+
+  // Agar admin me "src/..." likha hai to src/ hata do
+  if (cleanPath.startsWith('src/')) {
+    cleanPath = cleanPath.substring(4);
+  }
+
+  // Agar starting "./" ya "/" diya ho to hata do
+  cleanPath = cleanPath.replace(/^\.?\//, '');
+
+  // Agar .jsx nahi likha hai to automatically .jsx add karo
+  if (!cleanPath.toLowerCase().endsWith('.jsx')) {
+    cleanPath += '.jsx';
+  }
+
+  const moduleKey = `./${cleanPath}`;
+
+  const pageModule = targetPageModules[moduleKey];
+
+  // File nahi mili
+  if (!pageModule) {
+    alert(`Target Route Page nahi mili:\n${pagePath}`);
+    return;
+  }
+
+  // File me default export nahi hai
+  if (!pageModule.default) {
+    alert(`Target Route Page me default export nahi hai:\n${pagePath}`);
+    return;
+  }
+
+  // Actual JSX component ko screen par render karo
+  setTargetPage(() => pageModule.default);
+};
   
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -173,12 +219,16 @@ function App() {
       <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
       <main className="max-w-md mx-auto px-4 mt-6">
-        
-                {activeTab === 'home' && (
+
+{targetPage ? (
+  React.createElement(targetPage)
+) : (
+        {activeTab === 'home' && (
   <Home 
     user={user} 
     changeTab={changeTab} 
-    setFormType={setFormType} 
+    setFormType={setFormType}
+    openTargetPage={openTargetPage}
   />
 )}
 
@@ -250,6 +300,7 @@ function App() {
               </div>
             )}
           </div>
+        )}
         )}
       </main>
 
