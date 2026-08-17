@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-function Home({ user, changeTab, setFormType }) {
+function Home({ user, changeTab, setFormType, openTargetPage }) {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
@@ -54,15 +54,17 @@ function Home({ user, changeTab, setFormType }) {
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
   // Centralized Navigation Handler
-  const handleAction = (formTypeTarget = '2d') => {
-    if (user) {
-      if (typeof setFormType === 'function') setFormType(formTypeTarget);
-      if (typeof changeTab === 'function') changeTab('service');
-    } else {
-      if (typeof changeTab === 'function') changeTab('profile');
-    }
-  };
+  // Hero Showcase Target Route Handler
+const handleAction = (pagePath) => {
+  // Target Route Page blank hai to kuch bhi nahi hoga
+  if (!pagePath || !pagePath.trim()) {
+    return;
+  }
 
+  if (typeof openTargetPage === 'function') {
+    openTargetPage(pagePath);
+  }
+};
   // 1️⃣ LOADING STATE (Shimmer/Pulse Theme Animation)
   if (loading) {
     return (
@@ -133,7 +135,7 @@ function Home({ user, changeTab, setFormType }) {
                   <h2 className="text-xl font-extrabold text-white mt-2 leading-tight">{slide.title}</h2>
                 </div>
                 <button 
-                  onClick={() => handleAction(slide.type || '2d')}
+                  onClick={() => handleAction(slide.page_path)}
                   className="w-full py-2.5 bg-[#eb6923] text-white font-bold rounded-xl text-xs border-b-4 border-orange-700 shadow-sm transition-all active:translate-y-[2px] active:border-b-2"
                 >
                   {slide.subtitle || "Order Plan"}
