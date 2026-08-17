@@ -81,43 +81,53 @@ const [targetPage, setTargetPage] = useState(null);
   // Hero Showcase ke Target Route Page ko actual React component ke roop me open karega
 // URL ko bilkul change nahi karega
 const openTargetPage = (pagePath) => {
-  // Blank Target Route Page = kuch bhi nahi hoga
+  // Blank path = kuch bhi open nahi hoga
   if (!pagePath || !pagePath.trim()) {
+    return;
+  }
+
+  // User login nahi hai = Auth.jsx render hoga
+  if (!user) {
+    setTargetPage(() => (props) => (
+      <Auth
+        authMode={authMode}
+        setAuthMode={setAuthMode}
+        handleAuth={handleAuth}
+        setEmail={setEmail}
+        setPassword={setPassword}
+        setName={setName}
+        handleForgotPassword={handleForgotPassword}
+        onBack={() => setTargetPage(null)}
+      />
+    ));
     return;
   }
 
   let cleanPath = pagePath.trim().replace(/\\/g, '/');
 
-  // Agar admin me "src/..." likha hai to src/ hata do
+  // src/ ho to hatao
   if (cleanPath.startsWith('src/')) {
     cleanPath = cleanPath.substring(4);
   }
 
-  // Agar starting "./" ya "/" diya ho to hata do
+  // ./ ya / ho to hatao
   cleanPath = cleanPath.replace(/^\.?\//, '');
 
-  // Agar .jsx nahi likha hai to automatically .jsx add karo
+  // .jsx nahi hai to automatically add karo
   if (!cleanPath.toLowerCase().endsWith('.jsx')) {
     cleanPath += '.jsx';
   }
 
   const moduleKey = `./${cleanPath}`;
-
   const pageModule = targetPageModules[moduleKey];
 
   // File nahi mili
-  if (!pageModule) {
+  if (!pageModule || !pageModule.default) {
     alert(`Target Route Page nahi mili:\n${pagePath}`);
     return;
   }
 
-  // File me default export nahi hai
-  if (!pageModule.default) {
-    alert(`Target Route Page me default export nahi hai:\n${pagePath}`);
-    return;
-  }
-
-  // Actual JSX component ko screen par render karo
+  // Login hai = actual Target JSX open
   setTargetPage(() => pageModule.default);
 };
   
