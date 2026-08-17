@@ -220,89 +220,114 @@ const openTargetPage = (pagePath) => {
 
       <main className="max-w-md mx-auto px-4 mt-6">
 
-{targetPage ? (
-  React.createElement(targetPage)
-) : (
-        {activeTab === 'home' && (
-  <Home 
-    user={user} 
-    changeTab={changeTab} 
-    setFormType={setFormType}
-    openTargetPage={openTargetPage}
-  />
-)}
+  {targetPage ? (
+    React.createElement(targetPage)
+  ) : (
+    <>
+      {activeTab === 'home' && (
+        <Home 
+          user={user} 
+          changeTab={changeTab} 
+          setFormType={setFormType}
+          openTargetPage={openTargetPage}
+        />
+      )}
 
-
-
-        {activeTab === 'service' && (
-          <div className="space-y-4">
-            {!formType ? (
-              <div className="grid grid-cols-2 gap-4">
-                <div 
-                  onClick={() => user ? setFormType('2d') : changeTab('profile')}
-                  className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
-                >
-                  <i className="fa-solid fa-ruler-combined text-2xl text-[#eb6923] mb-3"></i>
-                  <h3 className="font-bold text-sm">2D Layout Plan</h3>
-                </div>
-                <div 
-                  onClick={() => user ? setFormType('3d') : changeTab('profile')}
-                  className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
-                >
-                  <i className="fa-solid fa-cube text-2xl text-[#eb6923] mb-3"></i>
-                  <h3 className="font-bold text-sm">3D Elevation</h3>
-                </div>
+      {activeTab === 'service' && (
+        <div className="space-y-4">
+          {!formType ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div 
+                onClick={() => user ? setFormType('2d') : changeTab('profile')}
+                className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
+              >
+                <i className="fa-solid fa-ruler-combined text-2xl text-[#eb6923] mb-3"></i>
+                <h3 className="font-bold text-sm">2D Layout Plan</h3>
               </div>
-            ) : (
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
-                {formType === '2d' && <LayoutForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
-                {formType === '3d' && <ElevationForm handleOrderSubmit={handleOrderSubmit} setFormType={setFormType} uploading={uploading} />}
-              </div>
-            )}
-          </div>
-        )}
 
-        {activeTab === 'order' && (
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
-            {user ? <Orders user={user} /> : <p className="text-center text-gray-500">Please login to see orders.</p>}
-          </div>
-        )}
-
-        {activeTab === 'profile' && (
-          <div className="space-y-4">
-            {!user ? (
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
-                <Auth 
-  authMode={authMode} 
-  setAuthMode={setAuthMode} 
-  handleAuth={handleAuth} 
-  setEmail={setEmail} 
-  setPassword={setPassword} 
-  setName={setName} 
-  handleForgotPassword={handleForgotPassword}
-  onBack={() => setActiveTab(previousTab || 'home')}
-/>
-
+              <div 
+                onClick={() => user ? setFormType('3d') : changeTab('profile')}
+                className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 active:scale-95 active:border-b-4 active:border-brandOrange"
+              >
+                <i className="fa-solid fa-cube text-2xl text-[#eb6923] mb-3"></i>
+                <h3 className="font-bold text-sm">3D Elevation</h3>
               </div>
-            ) : (
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-[#eb6923] text-white font-bold text-xl flex items-center justify-center shadow-md mb-3">
-                  {user.email?.charAt(0).toUpperCase()}
-                </div>
-                <h3 className="text-lg font-bold">My Account</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">{user.email}</p>
-                <button 
-                  className="w-full py-2.5 rounded-xl border-b-4 border border-red-600 bg-red-500 text-white font-bold tracking-wide active:scale-95 active:border-b transition-all duration-150"
-                  onClick={() => supabase.auth.signOut()}
-                >
-                  LOGOUT
-                </button>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+              {formType === '2d' && (
+                <LayoutForm 
+                  handleOrderSubmit={handleOrderSubmit} 
+                  setFormType={setFormType} 
+                  uploading={uploading} 
+                />
+              )}
+
+              {formType === '3d' && (
+                <ElevationForm 
+                  handleOrderSubmit={handleOrderSubmit} 
+                  setFormType={setFormType} 
+                  uploading={uploading} 
+                />
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'order' && (
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+          {user ? (
+            <Orders user={user} />
+          ) : (
+            <p className="text-center text-gray-500">
+              Please login to see orders.
+            </p>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'profile' && (
+        <div className="space-y-4">
+          {!user ? (
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+              <Auth 
+                authMode={authMode} 
+                setAuthMode={setAuthMode} 
+                handleAuth={handleAuth} 
+                setEmail={setEmail} 
+                setPassword={setPassword} 
+                setName={setName} 
+                handleForgotPassword={handleForgotPassword}
+                onBack={() => setActiveTab(previousTab || 'home')}
+              />
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#eb6923] text-white font-bold text-xl flex items-center justify-center shadow-md mb-3">
+                {user.email?.charAt(0).toUpperCase()}
               </div>
-            )}
-          </div>
-        )}
-        )}
-      </main>
+
+              <h3 className="text-lg font-bold">My Account</h3>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                {user.email}
+              </p>
+
+              <button 
+                className="w-full py-2.5 rounded-xl border-b-4 border border-red-600 bg-red-500 text-white font-bold tracking-wide active:scale-95 active:border-b transition-all duration-150"
+                onClick={() => supabase.auth.signOut()}
+              >
+                LOGOUT
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  )}
+
+</main>
 
       <BottomNavigation activeTab={activeTab} setActiveTab={changeTab} />
     </div>
