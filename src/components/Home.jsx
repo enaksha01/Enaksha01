@@ -53,28 +53,19 @@ function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonCli
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-    // Centralized Navigation Handler
-  // Hero Showcase Target Route Handler
-const handleAction = (pagePath) => {
-  if (!pagePath || !pagePath.trim()) {
-    return;
-  }
+      // Centralized Navigation Handler
+  const handleAction = (pagePath) => {
+    // Agar path blank hai to kuch mat karo
+    if (!pagePath || !pagePath.trim()) {
+      return;
+    }
 
-  // 👇 Ye line hume batayegi ki click hone par kya ho raha hai
-  alert("User status: " + (user ? "Logged IN" : "Logged OUT"));
-
-  if (!user) {
-    changeTab('profile');
-    return;
-  }
-
-  if (pagePath === '2d' || pagePath === '3d') {
-    changeTab('service');
-    setFormType(pagePath);
-  } else if (typeof openTargetPage === 'function') {
-    openTargetPage(pagePath);
-  }
-};
+    // YAHAN AAPKA WALA LOGIC LAGA HAI:
+    // user hai -> openTargetPage chalega
+    // user nahi hai -> profile (login) tab khulega
+    user ? openTargetPage(pagePath) : changeTab('profile');
+  };
+  
 
 
   // 1️⃣ LOADING STATE (Shimmer/Pulse Theme Animation)
