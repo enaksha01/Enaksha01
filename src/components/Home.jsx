@@ -53,19 +53,32 @@ function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonCli
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-      // Centralized Navigation Handler
+        // Centralized Navigation Handler
   const handleAction = (pagePath) => {
-    // Agar path blank hai to kuch mat karo
+    // 1. Agar link khali hai to kuch mat karo
     if (!pagePath || !pagePath.trim()) {
       return;
     }
 
-    // YAHAN AAPKA WALA LOGIC LAGA HAI:
-    // user hai -> openTargetPage chalega
-    // user nahi hai -> profile (login) tab khulega
-    user ? openTargetPage(pagePath) : changeTab('profile');
+    // 2. Agar user BINA LOGIN ke hai -> Seedha Login (profile) par bhejo aur wahi ruk jao
+    if (!user) {
+      changeTab('profile');
+      return; // Ye aage ka code chalne hi nahi dega
+    }
+
+    // 3. Agar user LOGIN HAI -> Fir check karo use kahan bhejna hai
+    const pathStr = pagePath.toLowerCase();
+    
+    // Agar link '2d' ya '3d' hai, to form type set karke service tab me bhejo
+    if (pathStr === '2d' || pathStr === '3d') {
+      changeTab('service');
+      setFormType(pathStr);
+    } 
+    // Agar link me koi .jsx page hai, tab openTargetPage chalao
+    else if (typeof openTargetPage === 'function') {
+      openTargetPage(pagePath);
+    }
   };
-  
 
 
   // 1️⃣ LOADING STATE (Shimmer/Pulse Theme Animation)
