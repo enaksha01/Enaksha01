@@ -60,13 +60,14 @@ const handleAction = (pagePath) => {
     return;
   }
 
-  // 1. Agar user LOGIN NAHI hai -> Direct Profile (Login) screen par bhejo
+  // 👇 Ye line hume batayegi ki click hone par kya ho raha hai
+  alert("User status: " + (user ? "Logged IN" : "Logged OUT"));
+
   if (!user) {
     changeTab('profile');
     return;
   }
 
-  // 2. Agar user LOGIN HAI -> Tabhi aage ka page/form khulega
   if (pagePath === '2d' || pagePath === '3d') {
     changeTab('service');
     setFormType(pagePath);
@@ -74,6 +75,7 @@ const handleAction = (pagePath) => {
     openTargetPage(pagePath);
   }
 };
+
 
   // 1️⃣ LOADING STATE (Shimmer/Pulse Theme Animation)
   if (loading) {
