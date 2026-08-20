@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-function Home({ user, changeTab, setFormType, openTargetPage }) {
+function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonClick }) {
   const [cmsData, setCmsData] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedTag, setSelectedTag] = useState('All');
