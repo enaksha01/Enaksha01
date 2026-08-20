@@ -78,6 +78,16 @@ const [targetPage, setTargetPage] = useState(null);
     setPreviousTab(activeTab);
     setActiveTab(newTab);
   };
+    // NAYA CODE: Hero button click handle karne ke liye
+  const handleHeroButtonClick = (type) => {
+    if (!user) {
+      changeTab('profile'); // Bina login wale ko Auth/Profile me bhejo
+    } else {
+      changeTab('service'); // Login wale ko Service tab me bhejo
+      setFormType(type);    // Aur form type set kardo ('2d' ya '3d')
+    }
+  };
+  
   // Hero Showcase ke Target Route Page ko actual React component ke roop me open karega
 // URL ko bilkul change nahi karega
 const openTargetPage = (pagePath) => {
@@ -237,14 +247,16 @@ const openTargetPage = (pagePath) => {
   })
 ) : (
     <>
-      {activeTab === 'home' && (
+            {activeTab === 'home' && (
         <Home 
           user={user} 
           changeTab={changeTab} 
           setFormType={setFormType}
           openTargetPage={openTargetPage}
+          handleHeroButtonClick={handleHeroButtonClick} 
         />
       )}
+
 
       {activeTab === 'service' && (
         <div className="space-y-4">
