@@ -53,18 +53,28 @@ function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonCli
     ? portfolioItems 
     : portfolioItems.filter(item => item.category_tag === selectedTag);
 
-  // Centralized Navigation Handler
+    // Centralized Navigation Handler
   // Hero Showcase Target Route Handler
 const handleAction = (pagePath) => {
-  // Target Route Page blank hai to kuch bhi nahi hoga
   if (!pagePath || !pagePath.trim()) {
     return;
   }
 
-  if (typeof openTargetPage === 'function') {
+  // 1. Agar user LOGIN NAHI hai -> Direct Profile (Login) screen par bhejo
+  if (!user) {
+    changeTab('profile');
+    return;
+  }
+
+  // 2. Agar user LOGIN HAI -> Tabhi aage ka page/form khulega
+  if (pagePath === '2d' || pagePath === '3d') {
+    changeTab('service');
+    setFormType(pagePath);
+  } else if (typeof openTargetPage === 'function') {
     openTargetPage(pagePath);
   }
 };
+
   // 1️⃣ LOADING STATE (Shimmer/Pulse Theme Animation)
   if (loading) {
     return (
