@@ -196,7 +196,8 @@ function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonCli
           {dbUtilities.map((util) => (
             <div 
               key={util.id}
-              onClick={() => handleAction(util.type || '2d')}
+              onClick={() => handleAction(util.page_path || util.type)}
+
               className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-3.5 cursor-pointer active:scale-[0.97] transition-all"
             >
               <div className="w-9 h-9 bg-orange-500/10 text-[#eb6923] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -246,7 +247,8 @@ function Home({ user, changeTab, setFormType, openTargetPage,handleHeroButtonCli
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.subtitle}</p>
                   </div>
                   <div 
-                    onClick={() => handleAction(item.type || '2d')}
+                    onClick={() => handleAction(item.page_path || item.type)}
+
                     className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 flex items-center justify-center text-[#eb6923] flex-shrink-0 active:scale-90 transition-transform cursor-pointer"
                   >
                     <i className="fa-solid fa-arrow-right text-xs"></i>
