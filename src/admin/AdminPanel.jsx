@@ -172,14 +172,12 @@ function AdminPanel() {
           </div>
         )}
 
-        {currentModule === 'order' && (
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm text-center py-10">
-            {/* Future Placement: <OrderAdmin /> */}
-            <i className="fa-solid fa-receipt text-4xl text-[#eb6923]/20 mb-3"></i>
-            <h4 className="font-bold text-sm">Order Ledger Console</h4>
-            <p className="text-xs text-gray-400 mt-1">Ready for order.jsx connection</p>
+                {currentModule === 'order' && (
+          <div className="mt-4">
+             <OrderAdmin />
           </div>
         )}
+
 
       </main>
     </div>
