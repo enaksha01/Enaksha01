@@ -4,7 +4,7 @@ import Header from '../components/Header';
 // 🔌 Future Architecture: Jab tu ye files banayega, tab in lines ko uncomment (saaf) kar dena
 import HomePortfolio from './homeportfolio';
 // import ServiceAdmin from './service';
-// import OrderAdmin from './order';
+import OrderAdmin from './order';
 
 function AdminPanel() {
   // 🔑 Admin Access States
