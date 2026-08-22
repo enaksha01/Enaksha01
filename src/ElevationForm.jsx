@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase'; // Apna supabase ka path check kar lena
+import { supabase } from './lib/supabase'; // Apna supabase ka path check kar lena
 
 const ElevationForm = ({ handleOrderSubmit, setFormType, uploading }) => {
   // 1. Price store karne ke liye state
