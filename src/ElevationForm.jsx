@@ -33,7 +33,8 @@ const ElevationForm = ({ handleOrderSubmit, setFormType, uploading }) => {
       </button>
       <h2 className="form-title">3D Elevation Details</h2>
       
-      <form onSubmit={handleOrderSubmit}>
+      <form onSubmit={(e) => handleOrderSubmit(e, elevationPrice)}>
+
         <div className="input-group">
           <label>Plot Dimensions</label>
           <input name="plotSize" type="text" className="form-input" placeholder="Enter Size" required />
