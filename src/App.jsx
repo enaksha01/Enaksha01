@@ -158,6 +158,7 @@ const openTargetPage = (pagePath) => {
   };
 
   const handleOrderSubmit = async (e) => {
+    const handleOrderSubmit = async (e, finalPrice) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
     if (!window.Razorpay) {
@@ -165,13 +166,16 @@ const openTargetPage = (pagePath) => {
       return;
     }
 
+    // Agar finalPrice galti se na aaye, toh fallback (default) price 999 rakha hai
+    const priceToCharge = finalPrice ? finalPrice : 999; 
+
     const form = e.target;
     const file = form.elements.siteFile.files[0];
     if (!file) return alert("Please upload a file.");
 
     const options = {
       key: "rzp_live_SpD9DCrPBHSi4S", 
-      amount: 100, 
+      amount: priceToCharge * 100, // 👈 YAHAN AAYEGA TERA LIVE PRICE (Paise me convert hoke)
       currency: "INR",
       name: "e-Naksha",
       description: "Service Booking Fee",
@@ -212,6 +216,7 @@ const openTargetPage = (pagePath) => {
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
+
 
   if (showSplash) {
     return (
