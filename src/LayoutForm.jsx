@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase'; // Apna supabase path verify kar lena
+import { supabase } from './lib/supabase'; // Apna supabase path verify kar lena
 
 const LayoutForm = ({ handleOrderSubmit, setFormType, uploading }) => {
   // 1. Price store karne ke liye state (Default 999)
