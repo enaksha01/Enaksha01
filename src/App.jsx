@@ -157,7 +157,7 @@ const openTargetPage = (pagePath) => {
     if (error) alert(error.message); else alert("Reset link sent!");
   };
 
-  const handleOrderSubmit = async (e) => {
+  
     const handleOrderSubmit = async (e, finalPrice) => {
     e.preventDefault();
     if (!user) { setActiveTab('profile'); return; }
