@@ -33,7 +33,8 @@ const LayoutForm = ({ handleOrderSubmit, setFormType, uploading }) => {
       </button>
       <h2 className="form-title">2D Layout Requirements</h2>
       
-      <form onSubmit={handleOrderSubmit}>
+      <form onSubmit={(e) => handleOrderSubmit(e, layoutPrice)}>
+
         <div className="input-group">
           <label>Plot Dimensions (e.g. 30x50 ft)</label>
           <input name="plotSize" type="text" className="form-input" placeholder="Enter Size" required />
