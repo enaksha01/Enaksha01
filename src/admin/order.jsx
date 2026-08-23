@@ -68,13 +68,12 @@ function AdminOrders() {
     }
   };
 
-  // 📤 UPLOAD FINAL PLAN FUNCTION
+    // 📤 UPLOAD FINAL PLAN FUNCTION
   const handleUploadFinalPlan = async (orderId, file) => {
     if (!file) return;
     
     setUploadingId(orderId);
     try {
-      // 'site-images' bucket ka hi use kar rahe hain
       const fileName = `final_plans/order_${orderId}_${Date.now()}_${file.name}`;
       
       // 1. File Upload to Storage
@@ -89,10 +88,13 @@ function AdminOrders() {
         .from('site-images')
         .getPublicUrl(fileName);
 
-      // 3. Update Order Database with PDF URL
+      // 3. Update Order Database with PDF URL AND Automatic Complete Status
       const { error: dbError } = await supabase
         .from('orders')
-        .update({ pdf_url: urlData.publicUrl })
+        .update({ 
+          pdf_url: urlData.publicUrl,
+          payment_status: 'complete' // 👈 Yahan se ab automatic 'complete' ho jayega!
+        })
         .eq('id', orderId);
 
       if (dbError) throw dbError;
@@ -105,6 +107,7 @@ function AdminOrders() {
       setUploadingId(null);
     }
   };
+
 
   if (loading) {
     return <div className="p-6 text-center text-gray-500">Loading Dashboard...</div>;
