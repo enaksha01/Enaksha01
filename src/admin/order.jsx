@@ -93,7 +93,7 @@ function AdminOrders() {
         .from('orders')
         .update({ 
           pdf_url: urlData.publicUrl,
-          payment_status: 'complete' // 👈 Yahan se ab automatic 'complete' ho jayega!
+          payment_status: 'Completed' // 👈 Yahan se ab automatic 'complete' ho jayega!
         })
         .eq('id', orderId);
 
