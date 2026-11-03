@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useSiteSettings } from '../lib/settingsStore';
 
-function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setFormType }) {
+function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setFormType, user }) {
   const { settings } = useSiteSettings();
   
   const [darkMode, setDarkMode] = useState(() => {
@@ -46,8 +46,13 @@ function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setF
       icon: Ruler, 
       badge: '₹999', 
       onClick: () => {
-        if (changeTab) changeTab('service');
-        if (setFormType) setFormType('2d');
+        if (!user) {
+          if (setFormType) setFormType('2d');
+          if (changeTab) changeTab('profile');
+        } else {
+          if (changeTab) changeTab('service');
+          if (setFormType) setFormType('2d');
+        }
       } 
     },
     { 
@@ -56,15 +61,26 @@ function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setF
       icon: Box, 
       badge: '₹2499', 
       onClick: () => {
-        if (changeTab) changeTab('service');
-        if (setFormType) setFormType('3d');
+        if (!user) {
+          if (setFormType) setFormType('3d');
+          if (changeTab) changeTab('profile');
+        } else {
+          if (changeTab) changeTab('service');
+          if (setFormType) setFormType('3d');
+        }
       } 
     },
     { 
       id: 'order', 
       label: 'My Projects', 
       icon: Layers, 
-      onClick: () => changeTab && changeTab('order') 
+      onClick: () => {
+        if (!user) {
+          if (changeTab) changeTab('profile');
+        } else {
+          if (changeTab) changeTab('order');
+        }
+      } 
     },
   ];
 
@@ -124,9 +140,6 @@ function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setF
                 <span className="text-[#2563eb] dark:text-[#38bdf8] text-2xl sm:text-3xl font-black drop-shadow-sm">
                   Naksha
                 </span>
-                <span className="ml-2 text-[9px] font-mono tracking-widest uppercase bg-orange-500/10 text-[#ea580c] dark:text-[#ff8c42] border border-orange-500/20 px-1.5 py-0.5 rounded-md font-bold hidden sm:inline-block">
-                  PRO CAD
-                </span>
               </div>
               
               {/* Dynamic Slogan configured via Admin Panel */}
@@ -169,8 +182,13 @@ function Header({ isMenuOpen, setIsMenuOpen, activeTab = 'home', changeTab, setF
             {/* Quick Action Button for Desktop */}
             <button
               onClick={() => {
-                if (changeTab) changeTab('service');
-                if (setFormType) setFormType('2d');
+                if (!user) {
+                  if (setFormType) setFormType('2d');
+                  if (changeTab) changeTab('profile');
+                } else {
+                  if (changeTab) changeTab('service');
+                  if (setFormType) setFormType('2d');
+                }
               }}
               className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#ff7828] text-white font-extrabold text-xs tracking-wider uppercase rounded-xl shadow-md shadow-orange-500/25 hover:brightness-110 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
             >

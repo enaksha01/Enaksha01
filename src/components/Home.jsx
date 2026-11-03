@@ -149,6 +149,10 @@ function Home({ user, changeTab, setFormType, openTargetPage, handleHeroButtonCl
     if (!pagePath || !pagePath.trim()) return;
 
     if (!user) {
+      const pathStr = pagePath.toLowerCase();
+      if (pathStr === '2d' || pathStr === '3d') {
+        if (typeof setFormType === 'function') setFormType(pathStr);
+      }
       changeTab('profile');
       return;
     }

@@ -116,6 +116,7 @@ function App() {
   // Hero button click handle karne ke liye
   const handleHeroButtonClick = (type) => {
     if (!user) {
+      setFormType(type);
       changeTab('profile'); // Bina login wale ko Auth/Profile me bhejo
     } else {
       changeTab('service'); // Login wale ko Service tab me bhejo
@@ -180,8 +181,12 @@ function App() {
         const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
         if (data?.user) {
-          // Smoothly return to previous tab if requested from service or order
-          setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+          // If a service form was previously requested, take user straight to service
+          if (formType) {
+            setActiveTab('service');
+          } else {
+            setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+          }
         }
       } else {
         const { data, error } = await supabase.auth.signUp({ 
@@ -194,7 +199,11 @@ function App() {
           alert("Account created successfully! A confirmation link has been sent to your email. Please verify to sign in.");
           setAuthMode('login');
         } else if (data?.user) {
-          setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+          if (formType) {
+            setActiveTab('service');
+          } else {
+            setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+          }
         }
       }
     } catch (err) { 
@@ -345,6 +354,7 @@ function App() {
           activeTab={activeTab} 
           changeTab={changeTab} 
           setFormType={setFormType} 
+          user={user}
         />
 
         {/* Main Expansive Responsive Layout Container (Mobile to Desktop) */}
@@ -371,7 +381,35 @@ function App() {
               {/* 2. SERVICE TAB */}
               {activeTab === 'service' && (
                 <div className="space-y-6 animate-fadeIn max-w-5xl mx-auto text-left">
-                  {!formType ? (
+                  {!user ? (
+                    <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900/85 backdrop-blur-xl border border-slate-200 dark:border-white/10 text-center space-y-5 shadow-xl max-w-xl mx-auto">
+                      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 text-[#ea580c] flex items-center justify-center mx-auto shadow-inner">
+                        <Lock className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white">
+                          Client Authentication Required
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono leading-relaxed">
+                          Please sign in or create an account to access custom 2D Vaastu floor blueprints and photorealistic 3D elevations.
+                        </p>
+                      </div>
+                      <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <button
+                          onClick={() => changeTab('profile')}
+                          className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#ff7828] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer active:scale-95 transition-all"
+                        >
+                          Sign In / Create Account
+                        </button>
+                        <button
+                          onClick={() => changeTab('home')}
+                          className="w-full sm:w-auto px-5 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                        >
+                          Back to Home
+                        </button>
+                      </div>
+                    </div>
+                  ) : !formType ? (
                     <div className="space-y-6">
                       <div className="text-left border-b border-slate-200 dark:border-white/10 pb-4">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#ea580c] bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/20">
@@ -700,21 +738,46 @@ function App() {
           </li>
           <li 
             className="menu-li flex items-center gap-3 font-semibold hover:text-[#ea580c] cursor-pointer"
-            onClick={() => { changeTab('service'); setFormType('2d'); setIsMenuOpen(false); }}
+            onClick={() => { 
+              setIsMenuOpen(false);
+              if (!user) {
+                setFormType('2d');
+                changeTab('profile');
+              } else {
+                changeTab('service');
+                setFormType('2d');
+              }
+            }}
           >
             <Ruler className="w-4 h-4 text-[#ea580c]" />
             <span>02 // 2D Layout Plan</span>
           </li>
           <li 
             className="menu-li flex items-center gap-3 font-semibold hover:text-[#ea580c] cursor-pointer"
-            onClick={() => { changeTab('service'); setFormType('3d'); setIsMenuOpen(false); }}
+            onClick={() => { 
+              setIsMenuOpen(false);
+              if (!user) {
+                setFormType('3d');
+                changeTab('profile');
+              } else {
+                changeTab('service');
+                setFormType('3d');
+              }
+            }}
           >
             <Box className="w-4 h-4 text-[#ea580c]" />
             <span>03 // 3D Elevation</span>
           </li>
           <li 
             className="menu-li flex items-center gap-3 font-semibold hover:text-[#ea580c] cursor-pointer"
-            onClick={() => { changeTab('order'); setIsMenuOpen(false); }}
+            onClick={() => { 
+              setIsMenuOpen(false);
+              if (!user) {
+                changeTab('profile');
+              } else {
+                changeTab('order');
+              }
+            }}
           >
             <Layers className="w-4 h-4 text-[#ea580c]" />
             <span>04 // My Projects</span>
