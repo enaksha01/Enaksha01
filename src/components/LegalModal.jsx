@@ -41,7 +41,7 @@ function LegalModal({ isOpen, onClose, initialTab = 'terms' }) {
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                Legal &amp; Compliance Portal
+                Legal &amp; Compliance Center
               </h3>
               <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
                 e-Naksha Architectural Services &bull; Official Regulatory Policy
@@ -89,7 +89,7 @@ function LegalModal({ isOpen, onClose, initialTab = 'terms' }) {
                 1. Architectural Service Engagement Terms
               </h4>
               <p>
-                Welcome to <strong>e-Naksha</strong> (&quot;e-Naksha Portal&quot;). By commissioning a 2D floor layout plan or 3D elevation rendering service, you agree to be bound by the terms outlined below:
+                Welcome to <strong>e-Naksha</strong> (&quot;e-Naksha Studio&quot;). By commissioning a 2D floor layout plan or 3D elevation rendering service, you agree to be bound by the terms outlined below:
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
@@ -168,7 +168,7 @@ function LegalModal({ isOpen, onClose, initialTab = 'terms' }) {
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
-                  <strong>Delivery Medium:</strong> Final CAD deliverables (high-resolution printable PDF sheets, DWG vector files upon request, and 4K ultra-HD 3D facade renders) are delivered directly inside the client&apos;s &quot;My Projects&quot; portal and emailed to the registered client address.
+                  <strong>Delivery Medium:</strong> Final CAD deliverables (high-resolution printable PDF sheets, DWG vector files upon request, and 4K ultra-HD 3D facade renders) are delivered directly inside the client&apos;s &quot;My Projects&quot; workspace and emailed to the registered client address.
                 </li>
                 <li>
                   <strong>Turnaround Timeline:</strong> Standard 2D Vaastu floor plans are delivered within <strong>24 to 48 hours</strong> of form submission. Complex multi-story 3D elevations are delivered within 48 to 72 hours.

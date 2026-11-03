@@ -1,5 +1,5 @@
 /**
- * Dynamic Sitemap Generator for e-Naksha Portal
+ * Dynamic Sitemap Generator for e-Naksha Studio
  * Adheres to Sitemaps XML protocol (https://www.sitemaps.org/schemas/sitemap/0.9)
  * Calculates priorities and security directives safely.
  */

@@ -176,17 +176,48 @@ function App() {
   const handleAuth = async (e) => {
     e.preventDefault();
     try {
-      const { error } = authMode === 'login' 
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
-      if (error) throw error;
-    } catch (err) { alert(err.message); }
+      if (authMode === 'login') {
+        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        if (error) throw error;
+        if (data?.user) {
+          // Smoothly return to previous tab if requested from service or order
+          setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+        }
+      } else {
+        const { data, error } = await supabase.auth.signUp({ 
+          email: email.trim(), 
+          password, 
+          options: { data: { full_name: name.trim() } } 
+        });
+        if (error) throw error;
+        if (data?.user && !data?.session) {
+          alert("Account created successfully! A confirmation link has been sent to your email. Please verify to sign in.");
+          setAuthMode('login');
+        } else if (data?.user) {
+          setActiveTab(previousTab && previousTab !== 'profile' ? previousTab : 'home');
+        }
+      }
+    } catch (err) { 
+      alert("Authentication Notice: " + err.message); 
+    }
   };
 
   const handleForgotPassword = async () => {
-    if (!email) return alert("Please enter email first.");
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) alert(error.message); else alert("Reset link sent!");
+    let targetEmail = email;
+    if (!targetEmail || !targetEmail.trim()) {
+      targetEmail = window.prompt("Please enter your registered email address to receive password reset link:");
+    }
+    if (!targetEmail || !targetEmail.trim()) return;
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(targetEmail.trim());
+      if (error) {
+        alert("Password Reset Notice: " + error.message);
+      } else {
+        alert("Password reset link has been dispatched to " + targetEmail.trim() + "! Please check your inbox and spam folder.");
+      }
+    } catch (err) {
+      alert("Network Error: " + err.message);
+    }
   };
 
   const handleOrderSubmit = async (e, finalPrice) => {
@@ -480,7 +511,7 @@ function App() {
                         onClick={() => changeTab('profile')}
                         className="px-6 py-3 bg-gradient-to-r from-[#ea580c] to-[#ff7828] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer active:scale-95 transition-all"
                       >
-                        Login to Client Portal
+                        Login to Client Studio
                       </button>
                     </div>
                   )}

@@ -19,7 +19,8 @@ function HomePortfolio() {
 
   const fetchCmsData = async () => {
     const { data } = await supabase.from('ecore_home_cms').select('*').order('created_at', { ascending: true });
-    setCmsData(data || []);
+    const clean = (data || []).filter(item => item.section_type !== 'site_settings');
+    setCmsData(clean);
   };
 
   const uploadFile = async (fileObj) => {
@@ -183,7 +184,7 @@ function HomePortfolio() {
         </div>
       </section>
 
-      {/* 🎛️ MODULE 3: QUICK UTILITY PORTAL MAPPERS */}
+      {/* 🎛️ MODULE 3: QUICK UTILITY SERVICE MAPPERS */}
       <section className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm space-y-4">
         <h3 className="text-xs font-black uppercase text-[#eb6923] border-b pb-2 dark:border-slate-800">3. Utility Action Buttons Box</h3>
         <form onSubmit={(e) => handleCreate('utility', e)} className="grid grid-cols-2 gap-3">

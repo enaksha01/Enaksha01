@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSiteSettings } from '../lib/settingsStore';
 import { 
   Sliders, 
@@ -16,6 +16,11 @@ function SiteSettingsAdmin() {
   const { settings, updateSettings, defaultSettings } = useSiteSettings();
   const [formData, setFormData] = useState({ ...settings });
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setFormData({ ...settings });
+  }, [settings]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -23,17 +28,31 @@ function SiteSettingsAdmin() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    await updateSettings(formData);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setSaving(true);
+    try {
+      await updateSettings(formData);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 4000);
+    } catch (err) {
+      alert("Error saving settings to cloud: " + (err.message || err));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleReset = async () => {
-    if (window.confirm("Reset all settings to studio defaults?")) {
-      setFormData({ ...defaultSettings });
-      await updateSettings(defaultSettings);
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 3000);
+    if (window.confirm("Reset all settings to studio defaults? This will sync to all devices.")) {
+      setSaving(true);
+      try {
+        setFormData({ ...defaultSettings });
+        await updateSettings(defaultSettings);
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 4000);
+      } catch (err) {
+        alert("Error resetting settings: " + (err.message || err));
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
@@ -50,14 +69,14 @@ function SiteSettingsAdmin() {
             Header Offer Banner, Slogan &amp; Site Settings
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-            Configure header offers on/off, slogan, branding, and contact channels in real time.
+            Configure header offers on/off, slogan, branding, and contact channels. All changes sync to Supabase and broadcast live across all visitor devices.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {savedSuccess && (
             <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-xl flex items-center gap-1.5 animate-fadeIn">
-              <Check className="w-4 h-4" /> Changes Applied Live!
+              <Check className="w-4 h-4" /> Synced Live to All Devices!
             </span>
           )}
           <button
@@ -314,10 +333,11 @@ function SiteSettingsAdmin() {
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full py-4 px-6 bg-gradient-to-r from-[#ea580c] via-[#ff7828] to-[#ea580c] text-white font-extrabold text-xs tracking-wider uppercase rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all hover:brightness-110 flex items-center justify-center gap-2 cursor-pointer"
+            disabled={saving}
+            className="w-full py-4 px-6 bg-gradient-to-r from-[#ea580c] via-[#ff7828] to-[#ea580c] text-white font-extrabold text-xs tracking-wider uppercase rounded-2xl shadow-lg shadow-orange-500/30 active:scale-95 transition-all hover:brightness-110 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
             <Check className="w-4 h-4" />
-            <span>SAVE &amp; APPLY STUDIO SETTINGS LIVE</span>
+            <span>{saving ? 'SYNCING TO CLOUD...' : 'SAVE & SYNC TO ALL DEVICES'}</span>
           </button>
         </div>
 

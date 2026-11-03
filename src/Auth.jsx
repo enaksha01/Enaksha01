@@ -40,7 +40,7 @@ const Auth = ({
           </button>
 
           <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-slate-500 bg-black/5 dark:bg-black/40 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-white/5">
-            CLIENT PORTAL
+            CLIENT STUDIO
           </span>
         </div>
 
