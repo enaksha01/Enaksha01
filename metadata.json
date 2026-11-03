@@ -1,0 +1,6 @@
+{
+  "name": "e-Naksha Portal",
+  "description": "Architectural design, layout planning, elevation services, and project management portal.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

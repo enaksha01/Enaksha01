@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Ye rahi teri keys jo humne mehnat se nikaali thi
-const supabaseUrl = 'https://dfozxtiheqnhnzzvvaxm.supabase.co'
-const supabaseKey = 'sb_publishable_ne2RLCwzr5LHAxIFpI0QoA_OQ4mS2Mw'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://dfozxtiheqnhnzzvvaxm.supabase.co'
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ne2RLCwzr5LHAxIFpI0QoA_OQ4mS2Mw'
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
