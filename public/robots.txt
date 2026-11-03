@@ -1,0 +1,17 @@
+# e-Naksha Robots.txt - Search Engine & Security Directives
+User-agent: *
+Allow: /
+Allow: /#service-2d
+Allow: /#service-3d
+Allow: /#projects
+Allow: /#terms
+Allow: /#privacy
+Allow: /#refund
+Allow: /#shipping
+
+# Strict Security: Disallow private administrative consoles
+Disallow: /*admin*
+Disallow: /*api*
+
+# Sitemap Location
+Sitemap: https://enaksha.com/sitemap.xml

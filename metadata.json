@@ -1,6 +1,6 @@
 {
   "name": "e-Naksha Portal",
-  "description": "Architectural design, layout planning, elevation services, and project management portal.",
+  "description": "Architectural 2D Vaastu layout planning, 3D elevation services, and project management portal with dynamic sitemaps and legal compliance.",
   "permissions": [],
   "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
